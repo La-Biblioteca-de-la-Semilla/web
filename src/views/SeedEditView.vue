@@ -90,15 +90,6 @@ function onAction(action: string) {
     <button class="btn btn-danger float-end" data-bs-toggle="modal" data-bs-target="#deleteSeedModal">
       <i class="bi-trash"/> Eliminar
     </button>
-    <div class="mb-4">
-      <p v-if="originalSeed">
-        <a class="btn btn-sm btn-light" :href="originalSeed.owner.url" target="_blank">
-          <img :src="originalSeed.owner.image" width="20" height="20" class="rounded-circle"
-               :alt="originalSeed.owner.name + ' logo'">
-          {{ originalSeed.owner.name }}
-        </a>
-      </p>
-    </div>
 
     <SeedForm v-if="seed" v-model="seed" :buttons="buttons" @action="onAction"/>
 
