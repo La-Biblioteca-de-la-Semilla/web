@@ -28,7 +28,7 @@ function getDiffNum(suggestion: Suggestion) {
             </RouterLink>
           </div>
           <small class="text-muted">
-            <i class="bi bi-bandaid" /> {{ getDiffNum(suggestion) }} cambios por {{ suggestion.createdBy }}
+            <i class="bi bi-bandaid" /> {{ getDiffNum(suggestion) }} cambios por {{ suggestion.userId }}
             <i class="bi bi-calendar-check ms-3" /> {{ suggestion.createdAt.toLocaleString() }}
           </small>
         </div>
