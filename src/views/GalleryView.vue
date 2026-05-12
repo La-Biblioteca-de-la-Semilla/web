@@ -5,7 +5,7 @@ import { storeToRefs } from 'pinia'
 import GalleryGrid from '@/components/GalleryGrid.vue'
 
 const seedImages = useSeedImagesStore()
-const { images } = storeToRefs(seedImages)
+const { images, loadingMore } = storeToRefs(seedImages)
 
 seedImages.fetchNext()
 
@@ -24,6 +24,6 @@ function onLoadMore() {
       cosechas llenas de vida. ¡Anímate a participar y comparte las fotos de tus cultivos en la galería de cada
       semilla!
     </small>
-    <GalleryGrid class="mt-4" :images="images" :allow-add="false" :allow-load="true" @load-more="onLoadMore" />
+    <GalleryGrid class="mt-4" :images="images" :allow-add="false" :allow-load="seedImages.hasMoreImages" :loading="loadingMore" @load-more="onLoadMore" />
   </section>
 </template>
