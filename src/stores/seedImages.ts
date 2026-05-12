@@ -18,8 +18,8 @@ export const useSeedImagesStore = defineStore('seedImages', {
     loadingMore: false,
     imagesPagination: {
       total: 0,
-      page: -1,
-      limit: 10
+      page: 0,
+      limit: 12
     } as Pagination
   }),
   getters: {
