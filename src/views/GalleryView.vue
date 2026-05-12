@@ -7,6 +7,7 @@ import GalleryGrid from '@/components/GalleryGrid.vue'
 const seedImages = useSeedImagesStore()
 const { images, loadingMore } = storeToRefs(seedImages)
 
+seedImages.resetGallery()
 seedImages.fetchNext()
 
 function onLoadMore() {

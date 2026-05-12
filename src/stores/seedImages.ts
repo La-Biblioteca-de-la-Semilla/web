@@ -56,6 +56,11 @@ export const useSeedImagesStore = defineStore('seedImages', {
         return await Promise.reject(reason)
       }
     },
+    resetGallery() {
+      this.images = []
+      this.imagesPagination = { total: 0, page: -1, limit: 12 }
+      this.loadingMore = false
+    },
     async fetchNext() {
       try {
         if (this.imagesPagination.page >= 0 && !this.hasMoreImages) return
