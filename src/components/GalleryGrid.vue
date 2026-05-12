@@ -55,11 +55,15 @@ function onLoadMoreImages() {
         </button>
       </div>
     </div>
-    <div class="row justify-content-md-center mt-3" v-if="(allowLoad || loading) && images.length">
+    <div class="row justify-content-md-center mt-3" v-if="loading || (allowLoad && images.length)">
       <div class="col-md-4 d-grid">
-        <button class="btn btn btn-outline-primary" @click.prevent="onLoadMoreImages" :disabled="loading">
-          <span v-if="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-          <i v-else class="bi bi-arrow-down" /> Ver más
+        <div v-if="loading" class="d-flex justify-content-center py-2">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+          </div>
+        </div>
+        <button v-else class="btn btn btn-outline-primary" @click.prevent="onLoadMoreImages">
+          <i class="bi bi-arrow-down" /> Ver más
         </button>
       </div>
     </div>
