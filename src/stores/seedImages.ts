@@ -15,12 +15,19 @@ export const useSeedImagesStore = defineStore('seedImages', {
     seedImages: [] as SeedImage[],
     seedImagesPagination: null as Pagination | null,
     images: [] as SeedImage[],
+    loadingMore: false,
     imagesPagination: {
       total: 0,
-      page: 0,
+      page: -1,
       limit: 10
     } as Pagination
   }),
+  getters: {
+    hasMoreImages(): boolean {
+      const { total, page, limit } = this.imagesPagination
+      return (page + 1) * limit < total
+    }
+  },
   actions: {
     async create(seedId: string, image: string) {
       try {
@@ -51,14 +58,18 @@ export const useSeedImagesStore = defineStore('seedImages', {
     },
     async fetchNext() {
       try {
+        if (this.imagesPagination.page >= 0 && !this.hasMoreImages) return
+        this.loadingMore = true
         const result = await imageService.listImages({
-          page: this.imagesPagination?.page + 1,
-          limit: this.imagesPagination?.limit
+          page: this.imagesPagination.page + 1,
+          limit: this.imagesPagination.limit
         })
         this.images = this.images.concat(result.images)
         this.imagesPagination = result.pagination
       } catch (reason) {
         return await Promise.reject(reason)
+      } finally {
+        this.loadingMore = false
       }
     }
   }
