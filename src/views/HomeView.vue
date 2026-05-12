@@ -74,22 +74,24 @@ function downloadCsv() {
     <div class="row mt-3 mt-md-5" v-else-if="getSeeds.length > 0">
       <p class="text-muted mb-1 d-flex align-items-center flex-wrap gap-2">
         <small>Total: {{ getSeeds.length }}</small>
-        <button 
-          type="button"
-          class="btn btn-sm btn-outline-success ms-2"
-          @click="downloadCsv"
-          title="Descargar listado de semillas filtradas en formato CSV"
-          aria-label="Descargar CSV"
-        >
-          <i class="bi bi-download me-1"></i>
-          <span class="d-none d-sm-inline">Descargar CSV</span>
-          <span class="d-inline d-sm-none">CSV</span>
-        </button>
-        <RouterLink :to="{name: 'seed-new'}" class="btn btn-sm btn-primary ms-auto"
-                    v-if="userOrganizations.length > 0">
-          <i class="bi-plus-lg"></i>
-          Añadir semilla
-        </RouterLink>
+        <span class="ms-auto d-flex align-items-center gap-2">
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-success"
+            @click="downloadCsv"
+            title="Descargar listado de semillas filtradas en formato CSV"
+            aria-label="Descargar CSV"
+          >
+            <i class="bi bi-download me-1"></i>
+            <span class="d-none d-sm-inline">Descargar CSV</span>
+            <span class="d-inline d-sm-none">CSV</span>
+          </button>
+          <RouterLink :to="{name: 'seed-new'}" class="btn btn-sm btn-primary"
+                      v-if="userOrganizations.length > 0">
+            <i class="bi-plus-lg"></i>
+            Añadir semilla
+          </RouterLink>
+        </span>
       </p>
       <div class="col-lg-6" v-for="seed in getSeeds" :key="seed.id">
         <seed-card
