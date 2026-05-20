@@ -13,21 +13,23 @@ const organizationStore = useOrganizationStore()
 const route = useRoute()
 
 const seed = computed(() => seedStore.seeds.find((s: Seed) => s.id === route.params.id) || null)
-const organization = computed(() => organizationStore.organizations.find((o: Organization) => o.id === seed.value?.owner) || null)
+const organization = computed(
+  () =>
+    organizationStore.organizations.find((o: Organization) => o.id === seed.value?.owner) || null
+)
 
 let printed = false
 
 async function waitForImages() {
   const imgs = Array.from(document.querySelectorAll('img'))
   await Promise.all(
-    imgs.map(
-      (img) =>
-        img.complete
-          ? Promise.resolve()
-          : new Promise<void>((resolve) => {
-              img.addEventListener('load', () => resolve(), { once: true })
-              img.addEventListener('error', () => resolve(), { once: true })
-            })
+    imgs.map((img) =>
+      img.complete
+        ? Promise.resolve()
+        : new Promise<void>((resolve) => {
+            img.addEventListener('load', () => resolve(), { once: true })
+            img.addEventListener('error', () => resolve(), { once: true })
+          })
     )
   )
 }
@@ -99,7 +101,9 @@ onMounted(() => {
     margin: 0;
   }
 
-  html, body, #app {
+  html,
+  body,
+  #app {
     margin: 0 !important;
     padding: 0 !important;
   }
@@ -260,9 +264,9 @@ body {
 
 .notas-content {
   width: 740px;
-  height: 300px;
+  height: 350px;
   position: absolute;
-  top: 820px;
+  top: 780px;
   left: 80px;
   margin: 0;
   background-image: url('../assets/print_dash.svg');
