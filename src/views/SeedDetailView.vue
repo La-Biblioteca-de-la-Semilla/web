@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useSeedStore } from '@/stores/seed'
 import { BOTANICAL_FAMILIES, type Seed, SQUARE_FOOT_IMAGE } from '@/model/Seed'
 import { toTags } from '@/model/Tag'
@@ -28,6 +28,12 @@ const { seeds } = storeToRefs(seedStore)
 const { seedImages } = storeToRefs(seedImagesStore)
 
 const route = useRoute()
+const router = useRouter()
+
+function onPrint() {
+  const resolved = router.resolve({ name: 'seed-print', params: { id: route.params.id } })
+  window.open(resolved.href, '_blank')
+}
 
 const seed = computed(() => seeds.value.find((s: Seed) => s.id === route.params.id) || null)
 const organization = computed(() => organizations.value.find((o: Organization) => o.id === seed.value?.owner) || null)
@@ -85,6 +91,9 @@ function onImageAdded(image: string) {
         </div>
         <div class="col-md-8 mt-4 mt-md-0">
           <div class="btn-group float-end">
+            <button class="btn btn-sm btn-light" @click.prevent="onPrint">
+              <i class="bi-printer" /> Imprimir
+            </button>
             <button class="btn btn-sm btn-light" @click.prevent="onShare">
               <i class="bi-share" /> Compartir
             </button>
