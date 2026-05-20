@@ -2,7 +2,7 @@
 import { useRoute } from 'vue-router'
 import { useSeedStore } from '@/stores/seed'
 import { BOTANICAL_FAMILIES, type Seed } from '@/model/Seed'
-import { computed, onMounted, watch } from 'vue'
+import { computed, onMounted, watch, nextTick } from 'vue'
 import { useOrganizationStore } from '@/stores/organization'
 import type { Organization } from '@/model/Organization'
 import nameBg from '@/assets/print_name_bg.svg'
@@ -22,16 +22,24 @@ let printed = false
 
 async function waitForImages() {
   const imgs = Array.from(document.querySelectorAll('img'))
-  await Promise.all(
-    imgs.map((img) =>
-      img.complete
-        ? Promise.resolve()
-        : new Promise<void>((resolve) => {
-            img.addEventListener('load', () => resolve(), { once: true })
-            img.addEventListener('error', () => resolve(), { once: true })
-          })
-    )
+  const imgPromises = imgs.map((img) =>
+    img.complete
+      ? Promise.resolve()
+      : new Promise<void>((resolve) => {
+          img.addEventListener('load', () => resolve(), { once: true })
+          img.addEventListener('error', () => resolve(), { once: true })
+        })
   )
+
+  // Also wait for CSS background images
+  const bgPromise = new Promise<void>((resolve) => {
+    const tempImg = new Image()
+    tempImg.onload = () => resolve()
+    tempImg.onerror = () => resolve()
+    tempImg.src = contentBg
+  })
+
+  await Promise.all([...imgPromises, bgPromise])
 }
 
 async function printWhenReady() {
@@ -43,15 +51,20 @@ async function printWhenReady() {
 }
 
 onMounted(() => {
-  if (seed.value) {
+  if (!seedStore.isLoading && seed.value) {
     printWhenReady()
   } else {
-    const stop = watch(seed, (val) => {
-      if (val) {
-        stop()
-        printWhenReady()
+    const stop = watch(
+      () => ({ loading: seedStore.isLoading, seed: seed.value }),
+      ({ loading, seed: s }) => {
+        if (!loading) {
+          stop()
+          if (s) {
+            nextTick(() => printWhenReady())
+          }
+        }
       }
-    })
+    )
   }
 })
 </script>
