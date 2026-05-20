@@ -2,7 +2,7 @@
 import { useRoute } from 'vue-router'
 import { useSeedStore } from '@/stores/seed'
 import { BOTANICAL_FAMILIES, type Seed } from '@/model/Seed'
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, watch } from 'vue'
 import { useOrganizationStore } from '@/stores/organization'
 import type { Organization } from '@/model/Organization'
 import nameBg from '@/assets/print_name_bg.svg'
@@ -15,9 +15,42 @@ const route = useRoute()
 const seed = computed(() => seedStore.seeds.find((s: Seed) => s.id === route.params.id) || null)
 const organization = computed(() => organizationStore.organizations.find((o: Organization) => o.id === seed.value?.owner) || null)
 
-onMounted(() => {
-  window.print()
+let printed = false
+
+async function waitForImages() {
+  const imgs = Array.from(document.querySelectorAll('img'))
+  await Promise.all(
+    imgs.map(
+      (img) =>
+        img.complete
+          ? Promise.resolve()
+          : new Promise<void>((resolve) => {
+              img.addEventListener('load', () => resolve(), { once: true })
+              img.addEventListener('error', () => resolve(), { once: true })
+            })
+    )
+  )
+}
+
+async function printWhenReady() {
+  if (printed || !seed.value) return
+  printed = true
+  await waitForImages()
   window.addEventListener('afterprint', () => window.close(), { once: true })
+  window.print()
+}
+
+onMounted(() => {
+  if (seed.value) {
+    printWhenReady()
+  } else {
+    const stop = watch(seed, (val) => {
+      if (val) {
+        stop()
+        printWhenReady()
+      }
+    })
+  }
 })
 </script>
 
