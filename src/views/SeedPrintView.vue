@@ -59,12 +59,15 @@ onMounted(() => {
     <img class="seed-img" :src="seed.image" alt="" />
     <img v-if="organization" class="logo" :src="organization.image" alt="Logo" />
 
-    <div class="seed-names" :style="{ backgroundImage: `url(${nameBg})` }">
-      <div>
-        <h1>{{ seed.name }}</h1>
-        <h2>{{ seed.species }}</h2>
-        <p v-if="seed.family" class="family">{{ BOTANICAL_FAMILIES[seed.family].text }}</p>
-        <p v-if="organization" class="org">{{ organization.name }}</p>
+    <div class="seed-names">
+      <div class="seed-names-inner">
+        <img class="name-bg" :src="nameBg" alt="" />
+        <div class="seed-names-text">
+          <h1>{{ seed.name }}</h1>
+          <h2>{{ seed.species }}</h2>
+          <p v-if="seed.family" class="family">{{ BOTANICAL_FAMILIES[seed.family].text }}</p>
+          <p v-if="organization" class="org">{{ organization.name }}</p>
+        </div>
       </div>
     </div>
 
@@ -161,17 +164,35 @@ body {
   position: absolute;
   top: 230px;
   right: 0;
-  text-align: center;
-  font-family: glassAntiqua, serif;
+}
+
+.seed-names-inner {
+  position: relative;
+  width: 100%;
+  min-height: 124px;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: right;
+  padding: 10px 0;
+  text-align: center;
+  font-family: glassAntiqua, serif;
+}
+
+.name-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  z-index: 0;
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
-  padding: 10px 0;
+}
+
+.seed-names-text {
+  position: relative;
+  z-index: 1;
 }
 
 .seed-names h1 {
