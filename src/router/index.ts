@@ -42,6 +42,11 @@ const router = createRouter({
       component: () => import('@/views/SeedDetailView.vue')
     },
     {
+      path: '/semilla/:id/print',
+      name: 'seed-print',
+      component: () => import('@/views/SeedPrintView.vue')
+    },
+    {
       path: '/semilla/:id/edit',
       name: 'seed-edit',
       component: () => import('@/views/SeedEditView.vue'),
