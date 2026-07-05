@@ -8,6 +8,7 @@ import { useUsersStore } from '@/stores/users'
 import { type Seed } from '@/model/Seed'
 import { useOrganizationStore } from '@/stores/organization'
 import { exportSeedsToCsv } from '@/services/csvExportService'
+import { watch } from 'vue'
 
 const userStore = useUsersStore()
 const organizationStore = useOrganizationStore()
@@ -33,6 +34,10 @@ function onWantChange(a: { seed: Seed, state: boolean }) {
 function onHaveChange(a: { seed: Seed, state: boolean }) {
   userStore.updateHave(a.seed.id, a.state)
 }
+
+watch(() => filters.value.draft, (draft) => {
+  seedStore.fetch(draft || undefined)
+})
 
 function downloadCsv() {
   exportSeedsToCsv(getSeeds.value)

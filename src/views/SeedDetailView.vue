@@ -24,6 +24,7 @@ const seedStore = useSeedStore()
 const seedImagesStore = useSeedImagesStore()
 const { user } = storeToRefs(userStore)
 const { organizations } = storeToRefs(organizationStore)
+const isOwner = computed(() => organizationStore.userOrganizations.length > 0)
 const { seeds } = storeToRefs(seedStore)
 const { seedImages } = storeToRefs(seedImagesStore)
 
@@ -72,6 +73,17 @@ function onImageAdded(image: string) {
   }
 }
 
+async function onPublish() {
+  if (seed.value) {
+    try {
+      await seedStore.publish(seed.value.id)
+      toaster.success({ text: 'Semilla publicada correctamente.' })
+    } catch {
+      toaster.error({ text: 'Error al publicar la semilla.' })
+    }
+  }
+}
+
 </script>
 
 <template>
@@ -110,6 +122,11 @@ function onImageAdded(image: string) {
                   <i class="bi-pencil" /> Editar
                 </RouterLink>
               </li>
+              <li v-if="seed.status === 'draft'">
+                <button class="dropdown-item" @click.prevent="onPublish">
+                  <i class="bi-send" /> Publicar
+                </button>
+              </li>
             </ul>
             <ul class="dropdown-menu" v-else-if="user">
               <RouterLink
@@ -120,7 +137,10 @@ function onImageAdded(image: string) {
             </ul>
           </div>
 
-          <h1 class="mb-0">{{ seed.name }}</h1>
+          <h1 class="mb-0">
+            {{ seed.name }}
+            <span v-if="seed.status === 'draft'" class="badge text-bg-warning ms-2" style="font-size: 0.5em; vertical-align: middle;">Borrador</span>
+          </h1>
           <h2 class="mb-2 text-muted">{{ seed.species }}</h2>
           <p class="mb-3" v-if="organization">
             <a class="btn btn-sm btn-light" v-if="seed.owner" :href="organization.url" target="_blank">

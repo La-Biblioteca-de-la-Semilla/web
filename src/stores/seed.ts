@@ -17,7 +17,8 @@ export const useSeedStore = defineStore('seed', {
       sentOn: '',
       family: null,
       have: false,
-      want: false
+      want: false,
+      draft: false
     },
     order: {
       by: 'name',
@@ -35,6 +36,11 @@ export const useSeedStore = defineStore('seed', {
 
       return state.seeds
         .filter((seed) => {
+          // Draft filter
+          const { draft } = state.filters
+          if (draft && seed.status !== 'draft') return false
+          if (!draft && seed.status === 'draft') return false
+
           // Search bar filter
           if (searchBar && !(
             seed.name.toUpperCase().includes(searchUpper) ||
@@ -80,11 +86,11 @@ export const useSeedStore = defineStore('seed', {
     }
   },
   actions: {
-    async fetch() {
+    async fetch(draft?: boolean) {
       try {
         this.seeds = []
         this.isLoading = true
-        const seedsData = await seedService.getSeeds()
+        const seedsData = await seedService.getSeeds(draft)
 
         this.seeds = seedsData.map((data: Seed) => ({
           ...data,
@@ -97,7 +103,8 @@ export const useSeedStore = defineStore('seed', {
           sfgOriginal: data.sfgOriginal ?? null,
           sfgMultisow: data.sfgMultisow ?? null,
           sfgClump: data.sfgClump ?? null,
-          germinationMin: data.germinationMin ?? null
+          germinationMin: data.germinationMin ?? null,
+          status: data.status ?? 'published'
         }) as Seed)
       } catch (error) {
         console.error('Error fetching seeds:', error)
@@ -168,6 +175,15 @@ export const useSeedStore = defineStore('seed', {
         if (removeIndex >= 0) {
           this.seeds.splice(removeIndex, 1)
         }
+      } catch (error) {
+        return Promise.reject(error)
+      }
+    },
+    async publish(id: string) {
+      try {
+        await seedService.publishSeed(id)
+        const seed = this.seeds.find(s => s.id === id)
+        if (seed) seed.status = 'published'
       } catch (error) {
         return Promise.reject(error)
       }

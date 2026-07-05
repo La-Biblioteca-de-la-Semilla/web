@@ -5,6 +5,8 @@ import sfg5 from '@/assets/sfg/sfg-5.svg'
 import sfg9 from '@/assets/sfg/sfg-9.svg'
 import sfg16 from '@/assets/sfg/sfg-16.svg'
 
+export type SeedStatus = 'draft' | 'published'
+
 export type Seed = {
   id: string
   name: string
@@ -21,6 +23,7 @@ export type Seed = {
   sfgClump: SquareFootType | null
   germinationMin: number | null
   germinationMax: number | null
+  status: SeedStatus
 }
 
 export type BotanicalFamily =
