@@ -98,8 +98,9 @@ async function onPublish() {
     </nav>
     <section>
       <div class="row g-0">
-        <div class="col-md-4">
+        <div class="col-md-4 position-relative">
           <img v-bind:src="seed.image" class="img-fluid seed-img pe-3" alt="..." />
+          <span v-if="seed.status === 'draft'" class="badge text-bg-warning position-absolute top-0 start-0 mt-2 fs-4 rounded-start-0">Borrador</span>
         </div>
         <div class="col-md-8 mt-4 mt-md-0">
           <div class="btn-group float-end">
@@ -137,10 +138,7 @@ async function onPublish() {
             </ul>
           </div>
 
-          <h1 class="mb-0">
-            {{ seed.name }}
-            <span v-if="seed.status === 'draft'" class="badge text-bg-warning ms-2" style="font-size: 0.5em; vertical-align: middle;">Borrador</span>
-          </h1>
+          <h1 class="mb-0">{{ seed.name }}</h1>
           <h2 class="mb-2 text-muted">{{ seed.species }}</h2>
           <p class="mb-3" v-if="organization">
             <a class="btn btn-sm btn-light" v-if="seed.owner" :href="organization.url" target="_blank">

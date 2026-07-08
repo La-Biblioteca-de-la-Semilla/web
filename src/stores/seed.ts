@@ -36,10 +36,9 @@ export const useSeedStore = defineStore('seed', {
 
       return state.seeds
         .filter((seed) => {
-          // Draft filter
+          // Draft filter: if active, show only drafts
           const { draft } = state.filters
           if (draft && seed.status !== 'draft') return false
-          if (!draft && seed.status === 'draft') return false
 
           // Search bar filter
           if (searchBar && !(

@@ -43,10 +43,11 @@ let wantState = computed({
 <template>
   <div class="card mb-3">
     <div class="row g-0">
-      <div class="col-md-4">
+      <div class="col-md-4 position-relative">
         <RouterLink :to="{name: 'seed-detail', params:{id: seed.id}}">
           <v-lazy-image v-bind:src="seed.image" class="img-fluid seed-img" alt="..." />
         </RouterLink>
+        <span v-if="seed.status === 'draft'" class="badge text-bg-warning position-absolute top-0 start-0 mt-2 fs-5 rounded-start-0">Borrador</span>
       </div>
       <div class="col-md-8">
         <div class="card-body">
