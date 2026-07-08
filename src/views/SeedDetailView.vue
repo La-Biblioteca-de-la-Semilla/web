@@ -24,6 +24,7 @@ const seedStore = useSeedStore()
 const seedImagesStore = useSeedImagesStore()
 const { user } = storeToRefs(userStore)
 const { organizations } = storeToRefs(organizationStore)
+const isOwner = computed(() => organizationStore.userOrganizations.length > 0)
 const { seeds } = storeToRefs(seedStore)
 const { seedImages } = storeToRefs(seedImagesStore)
 
@@ -72,6 +73,17 @@ function onImageAdded(image: string) {
   }
 }
 
+async function onPublish() {
+  if (seed.value) {
+    try {
+      await seedStore.publish(seed.value.id)
+      toaster.success({ text: 'Semilla publicada correctamente.' })
+    } catch {
+      toaster.error({ text: 'Error al publicar la semilla.' })
+    }
+  }
+}
+
 </script>
 
 <template>
@@ -86,8 +98,9 @@ function onImageAdded(image: string) {
     </nav>
     <section>
       <div class="row g-0">
-        <div class="col-md-4">
+        <div class="col-md-4 position-relative">
           <img v-bind:src="seed.image" class="img-fluid seed-img pe-3" alt="..." />
+          <span v-if="seed.status === 'draft'" class="badge text-bg-warning position-absolute top-0 start-0 mt-2 fs-4 rounded-start-0">Borrador</span>
         </div>
         <div class="col-md-8 mt-4 mt-md-0">
           <div class="btn-group float-end">
@@ -109,6 +122,11 @@ function onImageAdded(image: string) {
                   class="dropdown-item">
                   <i class="bi-pencil" /> Editar
                 </RouterLink>
+              </li>
+              <li v-if="seed.status === 'draft'">
+                <button class="dropdown-item" @click.prevent="onPublish">
+                  <i class="bi-send" /> Publicar
+                </button>
               </li>
             </ul>
             <ul class="dropdown-menu" v-else-if="user">

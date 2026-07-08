@@ -26,6 +26,7 @@ watch(
   (userOrganizations) => {
     if (userOrganizations.length > 0) {
       suggestionStore.fetch()
+      seedStore.fetchDraft()
     }
   }
 )

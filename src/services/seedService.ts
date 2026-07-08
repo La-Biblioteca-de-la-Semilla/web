@@ -9,6 +9,15 @@ export const seedService = {
     return response.data.seeds
   },
 
+  async getDraftSeeds(): Promise<Seed[]> {
+    const response = await api.get('/seeds', { params: { draft: true } })
+    return response.data.seeds
+  },
+
+  async publishSeed(id: string): Promise<void> {
+    await api.post(`/seeds/${id}/publish`)
+  },
+
   async createSeed(seedDto: CreateSeedDto): Promise<Seed> {
     const response = await api.post('/seeds', seedDto)
     return response.data

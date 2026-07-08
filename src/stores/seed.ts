@@ -17,7 +17,8 @@ export const useSeedStore = defineStore('seed', {
       sentOn: '',
       family: null,
       have: false,
-      want: false
+      want: false,
+      draft: false
     },
     order: {
       by: 'name',
@@ -35,6 +36,10 @@ export const useSeedStore = defineStore('seed', {
 
       return state.seeds
         .filter((seed) => {
+          // Draft filter: if active, show only drafts
+          const { draft } = state.filters
+          if (draft && seed.status !== 'draft') return false
+
           // Search bar filter
           if (searchBar && !(
             seed.name.toUpperCase().includes(searchUpper) ||
@@ -97,7 +102,8 @@ export const useSeedStore = defineStore('seed', {
           sfgOriginal: data.sfgOriginal ?? null,
           sfgMultisow: data.sfgMultisow ?? null,
           sfgClump: data.sfgClump ?? null,
-          germinationMin: data.germinationMin ?? null
+          germinationMin: data.germinationMin ?? null,
+          status: data.status ?? 'published'
         }) as Seed)
       } catch (error) {
         console.error('Error fetching seeds:', error)
@@ -168,6 +174,42 @@ export const useSeedStore = defineStore('seed', {
         if (removeIndex >= 0) {
           this.seeds.splice(removeIndex, 1)
         }
+      } catch (error) {
+        return Promise.reject(error)
+      }
+    },
+    async fetchDraft() {
+      try {
+        const draftData = await seedService.getDraftSeeds()
+        const mapped = draftData.map((data: Seed) => ({
+          ...data,
+          owner: data.owner,
+          description: data.description ?? '',
+          sow: data.sow ?? [],
+          sentOn: data.sentOn ?? '',
+          tags: [...(data.tags ?? [])].sort(),
+          family: data.family ?? null,
+          sfgOriginal: data.sfgOriginal ?? null,
+          sfgMultisow: data.sfgMultisow ?? null,
+          sfgClump: data.sfgClump ?? null,
+          germinationMin: data.germinationMin ?? null,
+          status: data.status ?? 'draft'
+        }) as Seed)
+        // Añadir solo las que no estén ya en la lista
+        for (const seed of mapped) {
+          if (!this.seeds.find(s => s.id === seed.id)) {
+            this.seeds.push(seed)
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching draft seeds:', error)
+      }
+    },
+    async publish(id: string) {
+      try {
+        await seedService.publishSeed(id)
+        const seed = this.seeds.find(s => s.id === id)
+        if (seed) seed.status = 'published'
       } catch (error) {
         return Promise.reject(error)
       }

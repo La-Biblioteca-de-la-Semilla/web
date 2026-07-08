@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import {computed} from 'vue';
 import {useSeedStore} from '@/stores/seed'
 import {storeToRefs} from 'pinia'
 import TagCheckButton from "@/components/TagCheckButton.vue";
@@ -6,12 +7,16 @@ import {TAGS} from "@/model/Tag"
 import SowingSessionSelector from "@/components/SowingSessionSelector.vue";
 import {useUsersStore} from "@/stores/users";
 import {BOTANICAL_FAMILIES} from "@/model/Seed";
+import {useOrganizationStore} from "@/stores/organization";
 
 const seedStore = useSeedStore()
 const {filters, order, getSentOnValues} = storeToRefs(seedStore)
 
 const userStore = useUsersStore()
 const {user} = storeToRefs(userStore)
+
+const organizationStore = useOrganizationStore()
+const isOwner = computed(() => organizationStore.userOrganizations.length > 0)
 
 </script>
 
@@ -64,6 +69,13 @@ const {user} = storeToRefs(userStore)
           <option selected value="N/A">Sin envío</option>
           <option v-for="(s, i) in getSentOnValues" :key="i" :value="s">{{ s }}</option>
         </select>
+      </div>
+      <div class="col-md-auto me-3" v-if="user && isOwner">
+        <h6 class="mt-3">Estado</h6>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" id="filterDraft" role="switch" v-model="filters.draft">
+          <label class="form-check-label" for="filterDraft">Borradores</label>
+        </div>
       </div>
       <div class="col-md-auto me-3" v-if="user">
         <h6 class="mt-3">Quiero / Tengo</h6>

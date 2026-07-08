@@ -33,7 +33,8 @@ const seed = ref<Seed>({
   sfgMultisow: null,
   sfgClump: null,
   germinationMin: null,
-  germinationMax: null
+  germinationMax: null,
+  status: 'draft'
 })
 
 watch(

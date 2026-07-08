@@ -41,7 +41,8 @@ watch(
         sfgMultisow: originalSeed.value.sfgMultisow,
         sfgClump: originalSeed.value.sfgClump,
         germinationMin: originalSeed.value.germinationMin,
-        germinationMax: originalSeed.value.germinationMax
+        germinationMax: originalSeed.value.germinationMax,
+        status: originalSeed.value.status
       }
     }
   },
