@@ -4,9 +4,13 @@ import type { CreateSeedDto } from '@/dtos/seeds/CreateSeedDto'
 import type { UpdateSeedDto } from '@/dtos/seeds/UpdateSeedDto'
 
 export const seedService = {
-  async getSeeds(draft?: boolean): Promise<Seed[]> {
-    const params = draft ? { draft: true } : {}
-    const response = await api.get('/seeds', { params })
+  async getSeeds(): Promise<Seed[]> {
+    const response = await api.get('/seeds')
+    return response.data.seeds
+  },
+
+  async getDraftSeeds(): Promise<Seed[]> {
+    const response = await api.get('/seeds', { params: { draft: true } })
     return response.data.seeds
   },
 

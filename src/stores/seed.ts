@@ -86,11 +86,11 @@ export const useSeedStore = defineStore('seed', {
     }
   },
   actions: {
-    async fetch(draft?: boolean) {
+    async fetch() {
       try {
         this.seeds = []
         this.isLoading = true
-        const seedsData = await seedService.getSeeds(draft)
+        const seedsData = await seedService.getSeeds()
 
         this.seeds = seedsData.map((data: Seed) => ({
           ...data,
@@ -177,6 +177,33 @@ export const useSeedStore = defineStore('seed', {
         }
       } catch (error) {
         return Promise.reject(error)
+      }
+    },
+    async fetchDraft() {
+      try {
+        const draftData = await seedService.getDraftSeeds()
+        const mapped = draftData.map((data: Seed) => ({
+          ...data,
+          owner: data.owner,
+          description: data.description ?? '',
+          sow: data.sow ?? [],
+          sentOn: data.sentOn ?? '',
+          tags: [...(data.tags ?? [])].sort(),
+          family: data.family ?? null,
+          sfgOriginal: data.sfgOriginal ?? null,
+          sfgMultisow: data.sfgMultisow ?? null,
+          sfgClump: data.sfgClump ?? null,
+          germinationMin: data.germinationMin ?? null,
+          status: data.status ?? 'draft'
+        }) as Seed)
+        // Añadir solo las que no estén ya en la lista
+        for (const seed of mapped) {
+          if (!this.seeds.find(s => s.id === seed.id)) {
+            this.seeds.push(seed)
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching draft seeds:', error)
       }
     },
     async publish(id: string) {
