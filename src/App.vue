@@ -19,14 +19,14 @@ const seedStore = useSeedStore()
 const suggestionStore = useSuggestionStore()
 
 organizationStore.fetch()
-seedStore.fetch()
+seedStore.fetchSeeds()
+seedStore.setupFilterWatchers()
 
 watch(
   () => organizationStore.userOrganizations,
   (userOrganizations) => {
     if (userOrganizations.length > 0) {
       suggestionStore.fetch()
-      seedStore.fetchDraft()
     }
   }
 )

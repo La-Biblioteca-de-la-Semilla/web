@@ -3,15 +3,30 @@ import type { Seed } from '@/model/Seed'
 import type { CreateSeedDto } from '@/dtos/seeds/CreateSeedDto'
 import type { UpdateSeedDto } from '@/dtos/seeds/UpdateSeedDto'
 
-export const seedService = {
-  async getSeeds(): Promise<Seed[]> {
-    const response = await api.get('/seeds')
-    return response.data.seeds
-  },
+export interface SeedsQueryParams {
+  page?: number
+  limit?: number
+  search?: string
+  tags?: string[]
+  sentOn?: string
+  family?: string
+  sowing?: number[]
+  draft?: boolean
+  userHaveIds?: string[]
+  userWantIds?: string[]
+}
 
-  async getDraftSeeds(): Promise<Seed[]> {
-    const response = await api.get('/seeds', { params: { draft: true } })
-    return response.data.seeds
+export interface SeedsResponse {
+  seeds: Seed[]
+  total: number
+  page: number
+  limit: number
+}
+
+export const seedService = {
+  async getSeeds(params: SeedsQueryParams = {}): Promise<SeedsResponse> {
+    const response = await api.get('/seeds', { params })
+    return response.data
   },
 
   async publishSeed(id: string): Promise<void> {
