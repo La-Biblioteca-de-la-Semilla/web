@@ -8,6 +8,7 @@ import { useUsersStore } from '@/stores/users'
 import { type Seed } from '@/model/Seed'
 import { useOrganizationStore } from '@/stores/organization'
 import { exportSeedsToCsv } from '@/services/csvExportService'
+import { ref, onUnmounted, watchEffect } from 'vue'
 
 const userStore = useUsersStore()
 const organizationStore = useOrganizationStore()
@@ -16,7 +17,27 @@ const { organizations, userOrganizations } = storeToRefs(organizationStore)
 
 
 const seedStore = useSeedStore()
-const { isLoading, getSeeds, filters } = storeToRefs(seedStore)
+const { isLoading, isLoadingMore, getSeeds, filters, totalSeeds } = storeToRefs(seedStore)
+
+const sentinel = ref<HTMLElement | null>(null)
+let observer: IntersectionObserver | null = null
+
+observer = new IntersectionObserver(
+  (entries) => {
+    if (entries[0].isIntersecting) {
+      seedStore.loadNextPage()
+    }
+  },
+  { rootMargin: '200px' }
+)
+
+watchEffect(() => {
+  if (sentinel.value) observer!.observe(sentinel.value)
+})
+
+onUnmounted(() => {
+  observer?.disconnect()
+})
 
 const route = useRoute()
 
@@ -67,14 +88,14 @@ function downloadCsv() {
         <seed-filters-bar></seed-filters-bar>
       </div>
     </form>
-    <div class="text-center mt-3 mt-md-5" v-if="isLoading">
+    <div class="text-center mt-3 mt-md-5" v-if="isLoading && !isLoadingMore">
       <div class="spinner-border text-primary mt-5" role="status">
         <span class="visually-hidden">Cargando...</span>
       </div>
     </div>
     <div class="row mt-3 mt-md-5" v-else-if="getSeeds.length > 0">
       <p class="text-muted mb-1 d-flex align-items-center flex-wrap gap-2">
-        <small>Total: {{ getSeeds.length }}</small>
+        <small>Total: {{ totalSeeds }}</small>
         <span class="ms-auto d-flex align-items-center gap-2">
           <button
             type="button"
@@ -102,6 +123,12 @@ function downloadCsv() {
           @onWantChange="onWantChange"
           @onHaveChange="onHaveChange"
         ></seed-card>
+      </div>
+      <div ref="sentinel" class="py-2"></div>
+      <div class="text-center py-3" v-if="isLoadingMore">
+        <div class="spinner-border spinner-border-sm text-primary" role="status">
+          <span class="visually-hidden">Cargando más...</span>
+        </div>
       </div>
     </div>
     <div v-else>
