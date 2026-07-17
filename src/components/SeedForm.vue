@@ -185,9 +185,16 @@ defineExpose({resetSubmitting})
     </div>
     <div class="mb-4 text-center ">
       <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-        <button class="btn" v-for="(b, i) in props.buttons" :key="i" @click.prevent="onAction(b.action, b.isSubmit)"
-                :class="b.class" :disabled="b.isSubmit && isSubmitting">{{ b.text }}
-        </button>
+        <template v-if="!isSubmitting">
+          <button class="btn" v-for="(b, i) in props.buttons" :key="i" @click.prevent="onAction(b.action, b.isSubmit)"
+                  :class="b.class">
+            {{ b.text }}
+          </button>
+        </template>
+        <template v-else>
+          <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+          Procesando...
+        </template>
       </div>
     </div>
 
