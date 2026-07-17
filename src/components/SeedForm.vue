@@ -28,6 +28,7 @@ const emit = defineEmits(['action'])
 const seedNameBlurred = ref<boolean>(false)
 const seedScientificNameBlurred = ref<boolean>(false)
 const seedImageBlurred = ref<boolean>(false)
+const isSubmitting = ref<boolean>(false)
 
 function onImageSelected(image: string) {
   model.value.image = image
@@ -37,14 +38,21 @@ function isEmpty(value: string) {
   return value.length === 0
 }
 
+function resetSubmitting() {
+  isSubmitting.value = false
+}
+
 function onAction(action: string, isSubmit: boolean) {
   if (isSubmit) {
+    if (isSubmitting.value) return;
+
     [seedNameBlurred.value, seedScientificNameBlurred.value, seedImageBlurred.value] = [true, true, true];
 
     const {name, species, image} = model.value;
     if ([name, species, image].some(isEmpty)) {
       toaster.error({text: "Hay errores en el formulario. Por favor, revísalo."});
     } else {
+      isSubmitting.value = true;
       emit('action', action);
     }
   } else {
@@ -52,6 +60,7 @@ function onAction(action: string, isSubmit: boolean) {
   }
 }
 
+defineExpose({resetSubmitting})
 </script>
 
 <template>
@@ -177,7 +186,7 @@ function onAction(action: string, isSubmit: boolean) {
     <div class="mb-4 text-center ">
       <div class="d-grid gap-2 d-md-flex justify-content-md-center">
         <button class="btn" v-for="(b, i) in props.buttons" :key="i" @click.prevent="onAction(b.action, b.isSubmit)"
-                :class="b.class">{{ b.text }}
+                :class="b.class" :disabled="b.isSubmit && isSubmitting">{{ b.text }}
         </button>
       </div>
     </div>
