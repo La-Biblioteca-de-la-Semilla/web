@@ -16,6 +16,7 @@ const organizationStore = useOrganizationStore()
 const seedStore = useSeedStore()
 const toaster = useToasterStore()
 
+const seedForm = ref<InstanceType<typeof SeedForm> | null>(null)
 const { userOrganizations } = storeToRefs(organizationStore)
 const myOrganization = computed(() => userOrganizations.value.length > 0 ? userOrganizations.value[0] : null)
 const seed = ref<Seed>({
@@ -85,6 +86,7 @@ function onSaveAndContinue() {
       }
     })
   }).catch(() => {
+    seedForm.value?.resetSubmitting()
   })
 }
 
@@ -100,7 +102,9 @@ function onSaveAndAddAnother() {
       seed.value.tags = []
     }
     window.scrollTo(0, 0)
+    seedForm.value?.resetSubmitting()
   }).catch(() => {
+    seedForm.value?.resetSubmitting()
   })
 }
 
@@ -142,7 +146,7 @@ function onAction(action: string) {
       </p>
     </div>
 
-    <SeedForm v-if="seed" v-model="seed" :buttons="buttons" @action="onAction" />
+    <SeedForm ref="seedForm" v-if="seed" v-model="seed" :buttons="buttons" @action="onAction" />
 
   </div>
 </template>

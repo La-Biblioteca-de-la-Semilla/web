@@ -15,6 +15,7 @@ const seedStore = useSeedStore()
 
 let originalSeed = ref<Seed | null>(null)
 let seed = ref<Seed | null>(null)
+const seedForm = ref<InstanceType<typeof SeedForm> | null>(null)
 
 
 watch(
@@ -70,7 +71,10 @@ function onSave() {
           router.push({name: 'seed-detail', params: {id: sv.id}});
         }
       })
-      .catch(console.error);
+      .catch((reason) => {
+        console.error(reason)
+        seedForm.value?.resetSubmitting()
+      });
 }
 
 function onCancel() {
@@ -91,7 +95,7 @@ function onAction(action: string) {
       <i class="bi-trash"/> Eliminar
     </button>
 
-    <SeedForm v-if="seed" v-model="seed" :buttons="buttons" @action="onAction"/>
+    <SeedForm ref="seedForm" v-if="seed" v-model="seed" :buttons="buttons" @action="onAction"/>
 
     <ConfirmationModal :id="'deleteSeedModal'" @confirmed="onDeleteConfirmed"></ConfirmationModal>
   </div>
