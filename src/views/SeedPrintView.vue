@@ -6,8 +6,7 @@ import { toTags, type Tag } from '@/model/Tag'
 import { computed, onMounted, watch, nextTick } from 'vue'
 import { useOrganizationStore } from '@/stores/organization'
 import type { Organization } from '@/model/Organization'
-import nameBg from '@/assets/print_name_bg.svg'
-import contentBg from '@/assets/print_content_bg.jpg'
+import contentBg from '@/assets/print_new_bg.jpg'
 import springIcon from '@/assets/seasons/spring.svg'
 import summerIcon from '@/assets/seasons/summer.svg'
 import autumnIcon from '@/assets/seasons/autumn.svg'
@@ -110,19 +109,16 @@ onMounted(async () => {
       <img class="seed-img" :src="seed.image" alt="" />
     </div>
 
-    <img
-      v-if="organization?.image"
-      class="logo"
-      :src="organization.image"
-      :alt="organization.name"
-    />
+    <div v-if="organization?.image" class="logo-box">
+      <img class="logo" :src="organization.image" :alt="organization.name" />
+    </div>
 
     <div class="seed-names">
-      <img class="name-bg" :src="nameBg" alt="" />
-      <div class="seed-names-text">
+      <div class="seed-title-box">
         <h1 class="seed-title">{{ seed.name }}</h1>
-        <h2 class="seed-species">{{ seed.species }}</h2>
       </div>
+      <div class="seed-title-line"></div>
+      <h2 v-if="seed.species" class="seed-species">{{ seed.species }}</h2>
     </div>
 
     <!-- Main Content Body -->
@@ -280,14 +276,12 @@ onMounted(async () => {
 /* Header Section */
 .photo-container {
   position: absolute;
-  top: 45px;
-  left: 75px;
-  width: 310px;
-  height: 310px;
+  top: 52px;
+  left: 84px;
+  width: 352px;
+  height: 352px;
   border-radius: 50%;
   overflow: hidden;
-  border: 4px solid #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
   background: #ffffff;
 }
 
@@ -297,72 +291,75 @@ onMounted(async () => {
   object-fit: cover;
 }
 
-.logo {
-  position: absolute;
-  top: 45px;
-  right: 75px;
-  max-width: 200px;
-  max-height: 85px;
-  object-fit: contain;
-}
-
-.seed-names {
-  position: absolute;
-  top: 135px;
-  right: 0;
-  width: 535px;
-  min-height: 140px;
-  display: flex;
-  align-items: center;
-}
-
-.name-bg {
+/* Organization logo over its own background block */
+.logo-box {
   position: absolute;
   top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: fill;
-  z-index: 0;
+  right: 24px;
+  width: 150px;
+  height: 150px;
+  background: #647350;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.seed-names-text {
-  position: relative;
-  z-index: 1;
+.logo {
   width: 100%;
-  padding-left: 55px;
-  padding-right: 30px;
-  padding-top: 12px;
-  padding-bottom: 12px;
+  height: 100%;
+  object-fit: contain;
+  filter: brightness(0) invert(1) opacity(0.75);
+}
+
+/* Seed names (title + rule + species) */
+.seed-names {
+  position: absolute;
+  top: 150px;
+  left: 490px;
+  width: 363px;
+}
+
+.seed-title-box {
+  min-height: 145px;
   display: flex;
-  flex-direction: column;
+  align-items: flex-end;
   justify-content: center;
-  align-items: center;
-  text-align: center;
 }
 
 .seed-title {
-  font-family: glassAntiqua, serif;
-  font-size: 38px;
-  font-weight: normal;
-  margin: 0 0 2px 0;
-  line-height: 1.1;
-  color: #1a1a1a;
+  font-family: josefinSlab, serif;
+  font-size: 52px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  line-height: 1.05;
+  text-align: center;
+  color: #000000;
+  margin: 0;
+}
+
+.seed-title-line {
+  width: 100%;
+  height: 5px;
+  background: #000000;
+  margin: 7px 0 6px 0;
 }
 
 .seed-species {
   font-family: josefinSlab, serif;
-  font-size: 21px;
+  font-size: 28px;
   font-weight: normal;
-  margin: 0;
   font-style: italic;
-  color: #3e3e3e;
+  text-align: center;
+  line-height: 1.1;
+  color: #1f1f1f;
+  margin: 0;
 }
 
 /* Content Body */
 .content-body {
   position: absolute;
-  top: 375px;
+  top: 430px;
   left: 75px;
   width: 750px;
   display: flex;
