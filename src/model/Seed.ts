@@ -54,13 +54,12 @@ export type BotanicalFamily =
   | 'SCROPHULARIACEAE'
   | 'SOLANACEAE'
   | 'VERBENACEAE'
-  | 'ZINGIBERACEAE';
-
+  | 'ZINGIBERACEAE'
 
 export type BotanicalFamilyInfo = {
-  text: string;
-  examples: string[];
-};
+  text: string
+  examples: string[]
+}
 
 export const BOTANICAL_FAMILIES: Record<BotanicalFamily, BotanicalFamilyInfo> = {
   ALLIACEAE: { text: 'Aliáceas', examples: ['Ajo', 'Cebolla', 'Chalote'] },
@@ -92,7 +91,6 @@ export const BOTANICAL_FAMILIES: Record<BotanicalFamily, BotanicalFamilyInfo> = 
   VERBENACEAE: { text: 'Verbenáceas', examples: ['Verbena', 'Lantana'] },
   ZINGIBERACEAE: { text: 'Zingiberáceas', examples: ['Jengibre', 'Cúrcuma'] }
 }
-
 
 export type SquareFootType = 1 | 2 | 4 | 5 | 9 | 16
 

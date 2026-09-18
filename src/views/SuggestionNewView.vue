@@ -20,7 +20,6 @@ const toaster = useToasterStore()
 let originalSeed = ref<Seed | null>(null)
 let suggestionSeed = ref<Seed | null>(null)
 
-
 watch(
   (): Seed[] => seedStore.seeds,
   (seedsResult) => {
@@ -90,21 +89,30 @@ function onSave() {
     sfgOriginal: getUpdatedOrNull(suggestionSeed.value.sfgOriginal, originalSeed.value.sfgOriginal),
     sfgMultisow: getUpdatedOrNull(suggestionSeed.value.sfgMultisow, originalSeed.value.sfgMultisow),
     sfgClump: getUpdatedOrNull(suggestionSeed.value.sfgClump, originalSeed.value.sfgClump),
-    germinationMin: getUpdatedOrNull(suggestionSeed.value.germinationMin, originalSeed.value.germinationMin),
-    germinationMax: getUpdatedOrNull(suggestionSeed.value.germinationMax, originalSeed.value.germinationMax),
+    germinationMin: getUpdatedOrNull(
+      suggestionSeed.value.germinationMin,
+      originalSeed.value.germinationMin
+    ),
+    germinationMax: getUpdatedOrNull(
+      suggestionSeed.value.germinationMax,
+      originalSeed.value.germinationMax
+    ),
     status: 'PENDING',
     createdAt: new Date(),
     updatedAt: new Date()
   }
 
-  suggestionStore.create(suggestion)
+  suggestionStore
+    .create(suggestion)
     .then(() => {
       toaster.success({ text: 'Sugerencia enviada correctamente' })
-      if (originalSeed.value) router.push({ name: 'seed-detail', params: { id: originalSeed.value.id } })
-    }).catch(e => {
-    console.error(e)
-    toaster.error({ text: 'Error al enviar la sugerencia' })
-  })
+      if (originalSeed.value)
+        router.push({ name: 'seed-detail', params: { id: originalSeed.value.id } })
+    })
+    .catch((e) => {
+      console.error(e)
+      toaster.error({ text: 'Error al enviar la sugerencia' })
+    })
 }
 
 function onCancel() {
@@ -112,25 +120,28 @@ function onCancel() {
 }
 
 function onAction(action: string) {
-  const b = buttons.find(b => b.action === action)
+  const b = buttons.find((b) => b.action === action)
   if (b) b.handler()
 }
-
 </script>
 
 <template>
   <div class="container pt-5">
     <h1>Sugerir un cambio</h1>
-    <small class="text-muted">Las sugerencias de cambios permiten que todos los usuarios de la biblioteca puedan mejorar
-      los datos de las semillas. El proceso de sugerir un cambio requiere de la validación por parte de los dueños del
-      registro.</small>
+    <small class="text-muted"
+      >Las sugerencias de cambios permiten que todos los usuarios de la biblioteca puedan mejorar
+      los datos de las semillas. El proceso de sugerir un cambio requiere de la validación por parte
+      de los dueños del registro.</small
+    >
 
-    <SeedForm class="mb-4 mt-5" v-if="suggestionSeed" v-model="suggestionSeed" :buttons="buttons" @action="onAction" />
-
+    <SeedForm
+      class="mb-4 mt-5"
+      v-if="suggestionSeed"
+      v-model="suggestionSeed"
+      :buttons="buttons"
+      @action="onAction"
+    />
   </div>
-
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

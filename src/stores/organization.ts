@@ -10,7 +10,7 @@ export const useOrganizationStore = defineStore('organization', {
   getters: {
     userOrganizations(state): Organization[] {
       const usersStore = useUsersStore()
-      return state.organizations.filter(o => o.owner === usersStore.user?.id)
+      return state.organizations.filter((o) => o.owner === usersStore.user?.id)
     }
   },
   actions: {

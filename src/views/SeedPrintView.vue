@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 import { useSeedStore } from '@/stores/seed'
-import { BOTANICAL_FAMILIES, type Seed } from '@/model/Seed'
+import { type Seed, SQUARE_FOOT_IMAGE } from '@/model/Seed'
+import { toTags, type Tag } from '@/model/Tag'
 import { computed, onMounted, watch, nextTick } from 'vue'
 import { useOrganizationStore } from '@/stores/organization'
 import type { Organization } from '@/model/Organization'
 import nameBg from '@/assets/print_name_bg.svg'
 import contentBg from '@/assets/print_content_bg.jpg'
+import springIcon from '@/assets/seasons/spring.svg'
+import summerIcon from '@/assets/seasons/summer.svg'
+import autumnIcon from '@/assets/seasons/autumn.svg'
+import winterIcon from '@/assets/seasons/winter.svg'
 
 const seedStore = useSeedStore()
 const organizationStore = useOrganizationStore()
@@ -18,11 +23,29 @@ const organization = computed(
     organizationStore.organizations.find((o: Organization) => o.id === seed.value?.owner) || null
 )
 
+const seedTags = computed<Tag[]>(() => (seed.value ? toTags(seed.value.tags || []) : []))
+
+const monthSeasons = [
+  springIcon,
+  springIcon,
+  springIcon,
+  summerIcon,
+  summerIcon,
+  summerIcon,
+  autumnIcon,
+  autumnIcon,
+  autumnIcon,
+  winterIcon,
+  winterIcon,
+  winterIcon
+]
+
 let printed = false
 
 async function waitForImages() {
-  const imgs = Array.from(document.querySelectorAll('img'))
-  const imgPromises = imgs.map((img) =>
+  const htmlImgs = Array.from(document.querySelectorAll('img'))
+
+  const htmlPromises = htmlImgs.map((img) =>
     img.complete
       ? Promise.resolve()
       : new Promise<void>((resolve) => {
@@ -31,7 +54,6 @@ async function waitForImages() {
         })
   )
 
-  // Also wait for CSS background images
   const bgPromise = new Promise<void>((resolve) => {
     const tempImg = new Image()
     tempImg.onload = () => resolve()
@@ -39,7 +61,7 @@ async function waitForImages() {
     tempImg.src = contentBg
   })
 
-  await Promise.all([...imgPromises, bgPromise])
+  await Promise.all([...htmlPromises, bgPromise])
 }
 
 async function printWhenReady() {
@@ -50,49 +72,147 @@ async function printWhenReady() {
   window.print()
 }
 
-onMounted(() => {
-  if (!seedStore.isLoading && seed.value) {
-    printWhenReady()
-  } else {
-    const stop = watch(
-      () => ({ loading: seedStore.isLoading, seed: seed.value }),
-      ({ loading, seed: s }) => {
-        if (!loading) {
-          stop()
-          if (s) {
-            nextTick(() => printWhenReady())
+onMounted(async () => {
+  if (organizationStore.organizations.length === 0) {
+    try {
+      await organizationStore.fetch()
+    } catch (e) {
+      console.error('Error fetching organizations', e)
+    }
+  }
+
+  if (seedStore.isLoading) {
+    await new Promise<void>((resolve) => {
+      const stop = watch(
+        () => seedStore.isLoading,
+        (loading) => {
+          if (!loading) {
+            stop()
+            resolve()
           }
-        }
-      }
-    )
+        },
+        { immediate: !seedStore.isLoading }
+      )
+    })
+  }
+
+  if (seed.value) {
+    await nextTick()
+    await printWhenReady()
   }
 })
 </script>
 
 <template>
   <div v-if="seed" class="print-page" :style="{ backgroundImage: `url(${contentBg})` }">
-    <img class="seed-img" :src="seed.image" alt="" />
-    <img v-if="organization" class="logo" :src="organization.image" alt="Logo" />
+    <!-- Header Section -->
+    <div class="photo-container">
+      <img class="seed-img" :src="seed.image" alt="" />
+    </div>
+
+    <img
+      v-if="organization?.image"
+      class="logo"
+      :src="organization.image"
+      :alt="organization.name"
+    />
 
     <div class="seed-names">
-      <div class="seed-names-inner">
-        <img class="name-bg" :src="nameBg" alt="" />
-        <div class="seed-names-text">
-          <h1>{{ seed.name }}</h1>
-          <h2>{{ seed.species }}</h2>
-          <p v-if="seed.family" class="family">{{ BOTANICAL_FAMILIES[seed.family].text }}</p>
-          <p v-if="organization" class="org">{{ organization.name }}</p>
-        </div>
+      <img class="name-bg" :src="nameBg" alt="" />
+      <div class="seed-names-text">
+        <h1 class="seed-title">{{ seed.name }}</h1>
+        <h2 class="seed-species">{{ seed.species }}</h2>
       </div>
     </div>
 
-    <div class="description">
-      <p v-if="seed.description">{{ seed.description }}</p>
+    <!-- Main Content Body -->
+    <div class="content-body">
+      <!-- Description Section -->
+      <section v-if="seed.description" class="section section-description description-section">
+        <p class="description-text">{{ seed.description }}</p>
+      </section>
+
+      <!-- Sowing Calendar Section -->
+      <section v-if="seed.sow && seed.sow.length > 0" class="section section-sow sow-section">
+        <h3 class="section-title">Calendario de siembra</h3>
+        <div class="sow-calendar">
+          <div v-for="(seasonIcon, i) in monthSeasons" :key="i" class="month-cell">
+            <img
+              :src="seasonIcon"
+              class="month-season-icon"
+              :class="{ 'opacity-faint': !seed.sow?.includes(i + 1) }"
+              alt=""
+            />
+          </div>
+        </div>
+      </section>
+
+      <!-- Technical Specifications (Single Unified Card) -->
+      <section
+        v-if="seedTags.length > 0 || seed.sfgOriginal || seed.sfgMultisow || seed.sfgClump"
+        class="section section-specs specs-card"
+      >
+        <div class="specs-content">
+          <!-- Botanical Tags -->
+          <div
+            v-if="seedTags.length > 0"
+            class="specs-section section-tags"
+            :class="{
+              'full-width': !seed.sfgOriginal && !seed.sfgMultisow && !seed.sfgClump
+            }"
+          >
+            <h3 class="section-title">Características botánicas</h3>
+            <div
+              class="tags-container"
+              :class="{
+                'tags-grid': !seed.sfgOriginal && !seed.sfgMultisow && !seed.sfgClump
+              }"
+            >
+              <div v-for="tag in seedTags" :key="tag.id" class="tag-item">
+                <img :src="tag.image" :alt="tag.text" class="tag-icon" />
+                <div class="tag-details">
+                  <span class="tag-title">{{ tag.text }}</span>
+                  <span class="tag-desc">{{ tag.description }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Divider when both columns are present -->
+          <div
+            v-if="seedTags.length > 0 && (seed.sfgOriginal || seed.sfgMultisow || seed.sfgClump)"
+            class="specs-divider"
+          ></div>
+
+          <!-- Square Foot Gardening (SFG) -->
+          <div
+            v-if="seed.sfgOriginal || seed.sfgMultisow || seed.sfgClump"
+            class="specs-section section-sfg"
+            :class="{
+              'full-width': seedTags.length === 0
+            }"
+          >
+            <h3 class="section-title">Marco de plantación (SFG)</h3>
+            <div class="sfg-container">
+              <div v-if="seed.sfgOriginal" class="sfg-item">
+                <span class="sfg-type-title">Original</span>
+                <img :src="SQUARE_FOOT_IMAGE[seed.sfgOriginal]" class="sfg-img" alt="Original" />
+              </div>
+              <div v-if="seed.sfgMultisow" class="sfg-item">
+                <span class="sfg-type-title">Multisow</span>
+                <img :src="SQUARE_FOOT_IMAGE[seed.sfgMultisow]" class="sfg-img" alt="Multisow" />
+              </div>
+              <div v-if="seed.sfgClump" class="sfg-item">
+                <span class="sfg-type-title">Macizo</span>
+                <img :src="SQUARE_FOOT_IMAGE[seed.sfgClump]" class="sfg-img" alt="Macizo" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
 
-    <h3 class="notas-title">Notas:</h3>
-    <p class="notas-content"></p>
-
+    <!-- Footer Disclaimer -->
     <p class="disclaimer">
       Recuerda que nuestras semillas son de polinización abierta y por lo tanto, a pesar de que se
       toman todas las medidas a nuestro alcance para asegurar la pureza varietal podrían suceder, de
@@ -137,6 +257,12 @@ onMounted(() => {
   src: url('@/assets/fonts/Roboto-Light.ttf');
 }
 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 .print-page {
   width: 900px;
   height: 1280px;
@@ -144,55 +270,50 @@ onMounted(() => {
   margin-right: auto;
   position: relative;
   background-size: cover;
+  background-position: center;
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
+  color: #2b2b2b;
+  overflow: hidden;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
+/* Header Section */
+.photo-container {
+  position: absolute;
+  top: 45px;
+  left: 75px;
+  width: 310px;
+  height: 310px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+  background: #ffffff;
 }
 
 .seed-img {
-  width: 380px;
-  height: 380px;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  border-radius: 100%;
-  position: absolute;
-  top: 50px;
-  left: 80px;
 }
 
 .logo {
-  width: 230px;
   position: absolute;
-  top: 50px;
-  right: 60px;
+  top: 45px;
+  right: 75px;
+  max-width: 200px;
+  max-height: 85px;
+  object-fit: contain;
 }
 
 .seed-names {
-  width: 510px;
-  min-height: 124px;
   position: absolute;
-  top: 230px;
+  top: 135px;
   right: 0;
-}
-
-.seed-names-inner {
-  position: relative;
-  width: 100%;
-  min-height: 124px;
+  width: 535px;
+  min-height: 140px;
   display: flex;
-  justify-content: center;
   align-items: center;
-  padding: 10px 0;
-  text-align: center;
-  font-family: glassAntiqua, serif;
 }
 
 .name-bg {
@@ -203,100 +324,239 @@ body {
   height: 100%;
   object-fit: fill;
   z-index: 0;
-  -webkit-print-color-adjust: exact;
-  print-color-adjust: exact;
 }
 
 .seed-names-text {
   position: relative;
   z-index: 1;
-}
-
-.seed-names h1 {
-  font-family: glassAntiqua, serif;
-  font-size: 45px;
-  font-weight: normal;
-  margin-bottom: 0;
-  padding-left: 60px;
+  width: 100%;
+  padding-left: 55px;
   padding-right: 30px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
-.seed-names h2 {
+.seed-title {
+  font-family: glassAntiqua, serif;
+  font-size: 38px;
+  font-weight: normal;
+  margin: 0 0 2px 0;
+  line-height: 1.1;
+  color: #1a1a1a;
+}
+
+.seed-species {
+  font-family: josefinSlab, serif;
+  font-size: 21px;
+  font-weight: normal;
+  margin: 0;
+  font-style: italic;
+  color: #3e3e3e;
+}
+
+/* Content Body */
+.content-body {
+  position: absolute;
+  top: 375px;
+  left: 75px;
+  width: 750px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.section,
+[class*='section-'],
+[class*='-section'] {
+  width: 100%;
+}
+
+.section,
+[class*='section-'],
+[class*='-section'] {
+  margin-top: 10px;
+}
+
+.content-body > :first-child {
+  margin-top: 0;
+}
+
+.section-title {
+  font-family: glassAntiqua, serif;
+  font-size: 24px;
+  font-weight: normal;
+  color: #2c2523;
+  margin: 0 0 6px 0;
+  border-bottom: 1px dashed rgba(80, 60, 40, 0.35);
+  padding-bottom: 2px;
+}
+
+/* Description */
+.description-text {
   font-family: josefinSlab, serif;
   font-size: 25px;
-  font-weight: normal;
-  margin-top: 0;
-  padding-left: 50px;
-  padding-right: 20px;
-  font-style: italic;
-}
-
-.family {
-  font-family: roboto, sans-serif;
-  font-size: 14px;
-  color: #555;
-  padding-left: 50px;
-  padding-right: 20px;
-}
-
-.org {
-  font-family: roboto, sans-serif;
-  font-size: 14px;
-  color: #555;
-  padding-left: 50px;
-  padding-right: 20px;
-}
-
-.description {
-  width: 740px;
-  height: 300px;
-  position: absolute;
-  top: 450px;
-  left: 80px;
-  font-family: josefinSlab, serif;
-  font-size: 26px;
-  font-weight: normal;
+  line-height: 25px;
   text-align: justify;
-  line-height: 34px;
+  color: #222;
+  margin: 0;
+}
+
+/* Sowing Calendar */
+.sow-calendar {
+  display: flex;
+  width: 100%;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.4);
   overflow: hidden;
 }
 
-.description p {
-  margin: 0;
+.month-cell {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 2px;
 }
 
-.notas-title {
-  position: absolute;
-  top: 750px;
-  left: 80px;
-  margin: 0;
-  font-family: glassAntiqua, serif;
-  font-size: 50px;
-  font-weight: normal;
+.month-season-icon {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
 }
 
-.notas-content {
-  width: 740px;
-  height: 350px;
-  position: absolute;
-  top: 780px;
-  left: 80px;
-  margin: 0;
-  background-image: url('../assets/print_dash.svg');
-  -webkit-print-color-adjust: exact;
-  print-color-adjust: exact;
+.opacity-faint {
+  opacity: 0.1;
 }
 
+/* Specs Single Unified Card */
+.specs-card {
+  padding: 12px 16px;
+  width: 100%;
+}
+
+.specs-content {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  align-items: flex-start;
+}
+
+.specs-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.specs-section.full-width {
+  flex: 1 1 100%;
+}
+
+.specs-divider {
+  width: 1px;
+  background: rgba(100, 80, 60, 0.2);
+  align-self: stretch;
+}
+
+/* Botanical Tags */
+.tags-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tags-container.tags-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.tag-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(100, 80, 60, 0.15);
+  border-radius: 4px;
+  padding: 4px 8px;
+}
+
+.tag-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.tag-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.tag-title {
+  font-family: roboto, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #2b2b2b;
+}
+
+.tag-desc {
+  font-family: roboto, sans-serif;
+  font-size: 12px;
+  color: #555;
+  line-height: 1.2;
+}
+
+/* SFG Section */
+.sfg-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+.sfg-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.sfg-type-title {
+  font-family: roboto, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: #4a4a4a;
+  margin-bottom: 4px;
+}
+
+.sfg-img {
+  width: 76px;
+  height: 76px;
+  object-fit: contain;
+  background: #fff;
+  border: 1px solid rgba(100, 80, 60, 0.25);
+  border-radius: 4px;
+  padding: 2px;
+}
+
+/* Disclaimer */
 .disclaimer {
-  width: 740px;
   position: absolute;
   bottom: 25px;
-  left: 80px;
+  left: 75px;
+  width: 750px;
   font-family: roboto, sans-serif;
-  font-size: 15px;
+  font-size: 13.5px;
   text-align: justify;
-  color: rgba(0, 0, 0, 0.8);
-  line-height: 1.2;
+  color: rgba(0, 0, 0, 0.75);
+  line-height: 1.25;
+  margin: 0;
 }
 
 .no-seed {

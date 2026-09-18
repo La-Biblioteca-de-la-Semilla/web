@@ -12,7 +12,6 @@ import { useOrganizationStore } from '@/stores/organization'
 import { watch } from 'vue'
 import { useSuggestionStore } from '@/stores/suggestion'
 
-
 const userStore = useUsersStore()
 const organizationStore = useOrganizationStore()
 const seedStore = useSeedStore()
@@ -45,7 +44,6 @@ const getCurrentUser = () => {
   })
 }
 getCurrentUser()
-
 </script>
 <template>
   <AppHeader />

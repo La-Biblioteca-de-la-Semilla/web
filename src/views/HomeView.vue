@@ -14,7 +14,6 @@ const organizationStore = useOrganizationStore()
 const { user } = storeToRefs(userStore)
 const { organizations, userOrganizations } = storeToRefs(organizationStore)
 
-
 const seedStore = useSeedStore()
 const { isLoading, getSeeds, filters } = storeToRefs(seedStore)
 
@@ -25,20 +24,17 @@ if (queryQ) {
   seedStore.setSearchBarFilter(queryQ)
 }
 
-
-function onWantChange(a: { seed: Seed, state: boolean }) {
+function onWantChange(a: { seed: Seed; state: boolean }) {
   userStore.updateWant(a.seed.id, a.state)
 }
 
-function onHaveChange(a: { seed: Seed, state: boolean }) {
+function onHaveChange(a: { seed: Seed; state: boolean }) {
   userStore.updateHave(a.seed.id, a.state)
 }
-
 
 function downloadCsv() {
   exportSeedsToCsv(getSeeds.value)
 }
-
 </script>
 
 <template>
@@ -87,8 +83,11 @@ function downloadCsv() {
             <span class="d-none d-sm-inline">Descargar CSV</span>
             <span class="d-inline d-sm-none">CSV</span>
           </button>
-          <RouterLink :to="{name: 'seed-new'}" class="btn btn-sm btn-primary"
-                      v-if="userOrganizations.length > 0">
+          <RouterLink
+            :to="{ name: 'seed-new' }"
+            class="btn btn-sm btn-primary"
+            v-if="userOrganizations.length > 0"
+          >
             <i class="bi-plus-lg"></i>
             Añadir semilla
           </RouterLink>
@@ -97,7 +96,7 @@ function downloadCsv() {
       <div class="col-lg-6" v-for="seed in getSeeds" :key="seed.id">
         <seed-card
           :seed="seed"
-          :organization="organizations?.find(o => o.id === seed.owner)"
+          :organization="organizations?.find((o) => o.id === seed.owner)"
           :user="user"
           @onWantChange="onWantChange"
           @onHaveChange="onHaveChange"
@@ -110,5 +109,4 @@ function downloadCsv() {
   </main>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

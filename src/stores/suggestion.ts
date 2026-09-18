@@ -4,7 +4,6 @@ import type { CreateSuggestionDto } from '@/dtos/suggestions/CreateSuggestionDto
 import { suggestionService } from '@/services/suggestionService'
 import type { Pagination } from '@/stores/seedImages'
 
-
 export const useSuggestionStore = defineStore('suggestion', {
   state: () => ({
     suggestions: [] as Suggestion[],

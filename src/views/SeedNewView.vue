@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import { computed, ref, watch } from 'vue'
 import { useSeedStore } from '@/stores/seed'
 import { useOrganizationStore } from '@/stores/organization'
@@ -9,7 +8,6 @@ import { type Seed } from '@/model/Seed'
 import SeedForm, { type Button } from '@/components/SeedForm.vue'
 import { storeToRefs } from 'pinia'
 
-
 const router = useRouter()
 
 const organizationStore = useOrganizationStore()
@@ -18,7 +16,9 @@ const toaster = useToasterStore()
 
 const seedForm = ref<InstanceType<typeof SeedForm> | null>(null)
 const { userOrganizations } = storeToRefs(organizationStore)
-const myOrganization = computed(() => userOrganizations.value.length > 0 ? userOrganizations.value[0] : null)
+const myOrganization = computed(() =>
+  userOrganizations.value.length > 0 ? userOrganizations.value[0] : null
+)
 const seed = ref<Seed>({
   id: '',
   name: '',
@@ -48,7 +48,6 @@ watch(
   { immediate: true }
 )
 
-
 const buttons = [
   {
     text: 'Cancelar',
@@ -72,54 +71,59 @@ const buttons = [
   }
 ] as Button[]
 
-
 function onCancel() {
   router.push('/')
 }
 
 function onSaveAndContinue() {
-  onSave().then((seedId: string) => {
-    router.push({
-      name: 'seed-detail',
-      params: {
-        id: seedId
-      }
+  onSave()
+    .then((seedId: string) => {
+      router.push({
+        name: 'seed-detail',
+        params: {
+          id: seedId
+        }
+      })
     })
-  }).catch(() => {
-    seedForm.value?.resetSubmitting()
-  })
+    .catch(() => {
+      seedForm.value?.resetSubmitting()
+    })
 }
 
 function onSaveAndAddAnother() {
-  onSave().then(() => {
-    if (seed.value) {
-      seed.value.name = ''
-      seed.value.species = ''
-      seed.value.image = ''
-      seed.value.description = ''
-      seed.value.sow = []
-      seed.value.sentOn = ''
-      seed.value.tags = []
-    }
-    window.scrollTo(0, 0)
-    seedForm.value?.resetSubmitting()
-  }).catch(() => {
-    seedForm.value?.resetSubmitting()
-  })
+  onSave()
+    .then(() => {
+      if (seed.value) {
+        seed.value.name = ''
+        seed.value.species = ''
+        seed.value.image = ''
+        seed.value.description = ''
+        seed.value.sow = []
+        seed.value.sentOn = ''
+        seed.value.tags = []
+      }
+      window.scrollTo(0, 0)
+      seedForm.value?.resetSubmitting()
+    })
+    .catch(() => {
+      seedForm.value?.resetSubmitting()
+    })
 }
-
 
 function onSave() {
   return new Promise<string>((resolve, reject) => {
     if (seed.value && myOrganization) {
-      seedStore.create(seed.value).then((result) => {
-        toaster.success({ text: 'Semilla creada con éxito' })
-        resolve(result.id)
-      }).catch(reason => {
-        toaster.error({ text: 'Ha ocurrido un error al crear la semilla.\n' + reason })
-        console.error(reason)
-        reject(reason)
-      })
+      seedStore
+        .create(seed.value)
+        .then((result) => {
+          toaster.success({ text: 'Semilla creada con éxito' })
+          resolve(result.id)
+        })
+        .catch((reason) => {
+          toaster.error({ text: 'Ha ocurrido un error al crear la semilla.\n' + reason })
+          console.error(reason)
+          reject(reason)
+        })
     } else {
       reject('Seed or organization not found on save')
     }
@@ -127,10 +131,9 @@ function onSave() {
 }
 
 function onAction(action: string) {
-  const b = buttons.find(b => b.action === action)
+  const b = buttons.find((b) => b.action === action)
   if (b) b.handler()
 }
-
 </script>
 
 <template>
@@ -139,14 +142,18 @@ function onAction(action: string) {
     <div class="mb-4">
       <p v-if="myOrganization">
         <a class="btn btn-sm btn-light" :href="myOrganization.url" target="_blank">
-          <img :src="myOrganization.image" width="20" height="20" class="rounded-circle"
-               :alt="myOrganization.name + ' logo'">
+          <img
+            :src="myOrganization.image"
+            width="20"
+            height="20"
+            class="rounded-circle"
+            :alt="myOrganization.name + ' logo'"
+          />
           {{ myOrganization.name }}
         </a>
       </p>
     </div>
 
     <SeedForm ref="seedForm" v-if="seed" v-model="seed" :buttons="buttons" @action="onAction" />
-
   </div>
 </template>

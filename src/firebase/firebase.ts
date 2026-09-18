@@ -13,7 +13,6 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID
 }
 
-
 // self.FIREBASE_APPCHECK_DEBUG_TOKEN = true
 
 const app = initializeApp(firebaseConfig)

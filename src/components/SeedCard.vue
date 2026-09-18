@@ -10,8 +10,8 @@ import logo from '@/assets/logo.svg'
 import type { Organization } from '@/model/Organization'
 
 interface Props {
-  seed: Seed,
-  user: User | null,
+  seed: Seed
+  user: User | null
   organization?: Organization
 }
 
@@ -37,31 +37,46 @@ let wantState = computed({
     })
   }
 })
-
 </script>
 
 <template>
   <div class="card mb-3">
     <div class="row g-0">
       <div class="col-md-4 position-relative">
-        <RouterLink :to="{name: 'seed-detail', params:{id: seed.id}}">
+        <RouterLink :to="{ name: 'seed-detail', params: { id: seed.id } }">
           <v-lazy-image v-bind:src="seed.image" class="img-fluid seed-img" alt="..." />
         </RouterLink>
-        <span v-if="seed.status === 'draft'" class="badge text-bg-warning position-absolute top-0 start-0 mt-2 fs-5 rounded-start-0">Borrador</span>
+        <span
+          v-if="seed.status === 'draft'"
+          class="badge text-bg-warning position-absolute top-0 start-0 mt-2 fs-5 rounded-start-0"
+          >Borrador</span
+        >
       </div>
       <div class="col-md-8">
         <div class="card-body">
           <div class="float-end">
-            <RouterLink class="btn btn-sm btn-outline-primary" :to="{name: 'seed-detail', params:{id: seed.id}}">Ver
-              más
+            <RouterLink
+              class="btn btn-sm btn-outline-primary"
+              :to="{ name: 'seed-detail', params: { id: seed.id } }"
+              >Ver más
             </RouterLink>
           </div>
           <h5 class="card-title">{{ seed.name }}</h5>
           <h6 class="card-subtitle mb-2 text-muted">{{ seed.species }}</h6>
           <p>
-            <a class="btn btn-sm btn-light" v-if="organization" :href="organization.url" target="_blank">
-              <img :src="organization.image" width="20" height="20" class="rounded-circle"
-                   :alt="organization.name + ' logo'">
+            <a
+              class="btn btn-sm btn-light"
+              v-if="organization"
+              :href="organization.url"
+              target="_blank"
+            >
+              <img
+                :src="organization.image"
+                width="20"
+                height="20"
+                class="rounded-circle"
+                :alt="organization.name + ' logo'"
+              />
               {{ organization.name }}
             </a>
             <small class="text-muted float-end"> {{ seed.sentOn }}</small>
@@ -71,11 +86,7 @@ let wantState = computed({
               <img class="img-fluid" :src="logo" alt="" style="max-height: 25px; padding: 3px" />
               {{ BOTANICAL_FAMILIES[seed.family].text }}
             </span>
-            <TagBadge
-              v-for="(tag, i) in toTags(seed.tags)"
-              :key="i"
-              :tag="tag"
-            />
+            <TagBadge v-for="(tag, i) in toTags(seed.tags)" :key="i" :tag="tag" />
           </p>
           <SowingSessionInfo :sow="seed.sow"></SowingSessionInfo>
         </div>
@@ -83,13 +94,21 @@ let wantState = computed({
     </div>
     <div class="card-footer text-muted" v-if="user">
       <div class="form-check form-check-inline">
-        <input class="form-check-input" type="checkbox" :id="'haveCheckbox-' + seed.id"
-               v-model="haveState">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          :id="'haveCheckbox-' + seed.id"
+          v-model="haveState"
+        />
         <label class="form-check-label" :for="'haveCheckbox-' + seed.id">La tengo</label>
       </div>
       <div class="form-check form-check-inline">
-        <input class="form-check-input" type="checkbox" :id="'wantCheckbox-' + seed.id"
-               v-model="wantState">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          :id="'wantCheckbox-' + seed.id"
+          v-model="wantState"
+        />
         <label class="form-check-label" :for="'wantCheckbox-' + seed.id">La quiero</label>
       </div>
     </div>
@@ -97,7 +116,6 @@ let wantState = computed({
 </template>
 
 <style scoped>
-
 .seed-img {
   width: 100%;
   height: 100%;

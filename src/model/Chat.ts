@@ -1,8 +1,8 @@
 export type Chat = {
   id: string
-  participants: string[],
-  unreadBy: string []
-  totalMessages: number,
+  participants: string[]
+  unreadBy: string[]
+  totalMessages: number
   lastMessage: Message | null
   messages: Message[]
 }

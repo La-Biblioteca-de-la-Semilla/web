@@ -3,9 +3,8 @@ import type { Suggestion } from '@/model/Suggestion'
 import api from '@/services/api'
 
 export const suggestionService = {
-
   async listSuggestions(): Promise<{
-    suggestions: Suggestion[];
+    suggestions: Suggestion[]
     pagination: { total: number; page: number; limit: number }
   }> {
     const response = await api.get('/suggestions')

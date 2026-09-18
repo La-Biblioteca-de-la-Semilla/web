@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import SeedImageComponent from '@/components/SeedImageComponent.vue'
 import type { SeedImage } from '@/model/SeedImage'
 import { useReportsStore } from '@/stores/reports'
@@ -37,20 +36,24 @@ function onImageClicked(seedImage: SeedImage) {
 function onLoadMoreImages() {
   emits('load-more')
 }
-
 </script>
 
 <template>
   <div>
     <div class="row">
-      <div v-for="image in images" :key="image.id"
-           class="col-6 col-sm-6 col-md-4 col-lg-3 p-1">
-        <SeedImageComponent :image="image" @report="onReport" @image-clicked="onImageClicked(image)" />
+      <div v-for="image in images" :key="image.id" class="col-6 col-sm-6 col-md-4 col-lg-3 p-1">
+        <SeedImageComponent
+          :image="image"
+          @report="onReport"
+          @image-clicked="onImageClicked(image)"
+        />
       </div>
       <div class="col-6 col-sm-6 col-md-4 col-lg-3 p-1" v-if="props.allowAdd">
-        <button class="btn btn-light w-100 squared"
-                data-bs-toggle="modal"
-                data-bs-target="#seedDetailImageSelectorModal">
+        <button
+          class="btn btn-light w-100 squared"
+          data-bs-toggle="modal"
+          data-bs-target="#seedDetailImageSelectorModal"
+        >
           <i class="bi bi-image" /> Añadir imagen
         </button>
       </div>
@@ -72,9 +75,7 @@ function onLoadMoreImages() {
 </template>
 
 <style scoped>
-
 .squared {
   aspect-ratio: 1 / 1;
 }
-
 </style>

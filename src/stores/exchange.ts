@@ -2,12 +2,12 @@ import { defineStore } from 'pinia'
 import { exchangeService } from '@/services/exchangeService'
 
 interface MatchingUser {
-  id: string;
-  name: string;
-  image: string;
-  wantHaveMatches: number;
-  haveWantMatches: number;
-  totalMatches: number;
+  id: string
+  name: string
+  image: string
+  wantHaveMatches: number
+  haveWantMatches: number
+  totalMatches: number
 }
 
 export const useExchangeStore = defineStore('exchange', {

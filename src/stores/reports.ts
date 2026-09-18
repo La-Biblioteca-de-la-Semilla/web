@@ -28,7 +28,6 @@ export const useReportsStore = defineStore('reports', {
       this.modal?.hide()
     },
     async create(reason: ReportReasonKey, text: string) {
-
       if (!this.reportType) return Promise.reject('No report type')
       if (!this.id) return Promise.reject('No reported id')
 
@@ -53,7 +52,7 @@ export const useReportsStore = defineStore('reports', {
   }
 })
 
-export type ReportType = 'GALLERY_IMAGE' | 'COMMENT';
+export type ReportType = 'GALLERY_IMAGE' | 'COMMENT'
 
 export const ReportReasons = {
   CONTENT_EXPLICIT: { value: 'CONTENT_EXPLICIT', text: 'Contenido explícito' },
@@ -63,6 +62,6 @@ export const ReportReasons = {
   OTHER: { value: 'OTHER', text: 'Otro' }
 } as const
 
-export type ReportReasonKey = keyof typeof ReportReasons; // "CONTENT_EXPLICIT" | "COPYRIGHT" | "SPAM" | "HATE_AND_VIOLENCE" | "OTHER"
+export type ReportReasonKey = keyof typeof ReportReasons // "CONTENT_EXPLICIT" | "COPYRIGHT" | "SPAM" | "HATE_AND_VIOLENCE" | "OTHER"
 
-export type ReportReasonValue = (typeof ReportReasons)[ReportReasonKey];
+export type ReportReasonValue = (typeof ReportReasons)[ReportReasonKey]
