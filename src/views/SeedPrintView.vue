@@ -285,6 +285,28 @@ onMounted(async () => {
   font-weight: normal;
   font-style: italic;
 }
+@font-face {
+  font-family: atkinson;
+  src: url('@/assets/fonts/AtkinsonHyperlegible-Regular.ttf');
+  font-weight: normal;
+}
+@font-face {
+  font-family: atkinson;
+  src: url('@/assets/fonts/AtkinsonHyperlegible-Bold.ttf');
+  font-weight: bold;
+}
+@font-face {
+  font-family: atkinson;
+  src: url('@/assets/fonts/AtkinsonHyperlegible-Italic.ttf');
+  font-weight: normal;
+  font-style: italic;
+}
+@font-face {
+  font-family: atkinson;
+  src: url('@/assets/fonts/AtkinsonHyperlegible-BoldItalic.ttf');
+  font-weight: bold;
+  font-style: italic;
+}
 
 * {
   margin: 0;
@@ -438,9 +460,9 @@ onMounted(async () => {
 }
 
 .description-text {
-  font-family: unigeo, sans-serif;
-  font-size: 25px;
-  line-height: 25px;
+  font-family: atkinson, sans-serif;
+  font-size: 30px;
+  line-height: 30px;
   text-align: justify;
   color: #222;
   margin: 0;
