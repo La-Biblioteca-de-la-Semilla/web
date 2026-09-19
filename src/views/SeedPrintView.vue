@@ -3,7 +3,7 @@ import { useRoute } from 'vue-router'
 import { useSeedStore } from '@/stores/seed'
 import { type Seed, SQUARE_FOOT_IMAGE } from '@/model/Seed'
 import { toTags, type Tag } from '@/model/Tag'
-import { computed, onMounted, watch, nextTick } from 'vue'
+import { computed, onMounted, ref, watch, nextTick } from 'vue'
 import { useOrganizationStore } from '@/stores/organization'
 import type { Organization } from '@/model/Organization'
 import contentBg from '@/assets/print_new_bg.jpg'
@@ -39,7 +39,30 @@ const monthSeasons = [
   winterIcon
 ]
 
+const descriptionSlot = ref<HTMLElement | null>(null)
+
+const DESCRIPTION_MAX_FONT_SIZE = 25
+const DESCRIPTION_MIN_FONT_SIZE = 15
+
 let printed = false
+
+function fitDescription() {
+  const slot = descriptionSlot.value
+  if (!slot) return
+
+  const text = slot.querySelector<HTMLElement>('.description-text')
+  if (!text) return
+
+  let fontSize = DESCRIPTION_MAX_FONT_SIZE
+  text.style.fontSize = `${fontSize}px`
+  text.style.lineHeight = `${fontSize}px`
+
+  while (slot.scrollHeight > slot.clientHeight && fontSize > DESCRIPTION_MIN_FONT_SIZE) {
+    fontSize -= 1
+    text.style.fontSize = `${fontSize}px`
+    text.style.lineHeight = `${fontSize}px`
+  }
+}
 
 async function waitForImages() {
   const htmlImgs = Array.from(document.querySelectorAll('img'))
@@ -61,12 +84,17 @@ async function waitForImages() {
   })
 
   await Promise.all([...htmlPromises, bgPromise])
+
+  if (document.fonts) {
+    await document.fonts.ready
+  }
 }
 
 async function printWhenReady() {
   if (printed || !seed.value) return
   printed = true
   await waitForImages()
+  fitDescription()
   window.addEventListener('afterprint', () => window.close(), { once: true })
   window.print()
 }
@@ -97,6 +125,7 @@ onMounted(async () => {
 
   if (seed.value) {
     await nextTick()
+    fitDescription()
     await printWhenReady()
   }
 })
@@ -121,13 +150,13 @@ onMounted(async () => {
       <h2 v-if="seed.species" class="seed-species">{{ seed.species }}</h2>
     </div>
 
+    <!-- Description Section (fixed slot so the rest of the sheet never moves) -->
+    <section ref="descriptionSlot" class="section section-description description-section">
+      <p v-if="seed.description" class="description-text">{{ seed.description }}</p>
+    </section>
+
     <!-- Main Content Body -->
     <div class="content-body">
-      <!-- Description Section -->
-      <section v-if="seed.description" class="section section-description description-section">
-        <p class="description-text">{{ seed.description }}</p>
-      </section>
-
       <!-- Sowing Calendar Section -->
       <section v-if="seed.sow && seed.sow.length > 0" class="section section-sow sow-section">
         <h3 class="section-title">Calendario de siembra</h3>
@@ -363,7 +392,7 @@ onMounted(async () => {
 /* Content Body */
 .content-body {
   position: absolute;
-  top: 430px;
+  top: 725px;
   left: 75px;
   width: 750px;
   display: flex;
@@ -398,6 +427,16 @@ onMounted(async () => {
 }
 
 /* Description */
+.description-section {
+  position: absolute;
+  top: 430px;
+  left: 75px;
+  width: 750px;
+  height: 270px;
+  margin-top: 0;
+  overflow: hidden;
+}
+
 .description-text {
   font-family: unigeo, sans-serif;
   font-size: 25px;
