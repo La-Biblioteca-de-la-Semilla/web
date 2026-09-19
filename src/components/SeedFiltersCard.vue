@@ -1,23 +1,22 @@
 <script setup lang="ts">
-import {computed} from 'vue';
-import {useSeedStore} from '@/stores/seed'
-import {storeToRefs} from 'pinia'
-import TagCheckButton from "@/components/TagCheckButton.vue";
-import {TAGS} from "@/model/Tag"
-import SowingSessionSelector from "@/components/SowingSessionSelector.vue";
-import {useUsersStore} from "@/stores/users";
-import {BOTANICAL_FAMILIES} from "@/model/Seed";
-import {useOrganizationStore} from "@/stores/organization";
+import { computed } from 'vue'
+import { useSeedStore } from '@/stores/seed'
+import { storeToRefs } from 'pinia'
+import TagCheckButton from '@/components/TagCheckButton.vue'
+import { TAGS } from '@/model/Tag'
+import SowingSessionSelector from '@/components/SowingSessionSelector.vue'
+import { useUsersStore } from '@/stores/users'
+import { BOTANICAL_FAMILIES } from '@/model/Seed'
+import { useOrganizationStore } from '@/stores/organization'
 
 const seedStore = useSeedStore()
-const {filters, order, getSentOnValues} = storeToRefs(seedStore)
+const { filters, order, getSentOnValues } = storeToRefs(seedStore)
 
 const userStore = useUsersStore()
-const {user} = storeToRefs(userStore)
+const { user } = storeToRefs(userStore)
 
 const organizationStore = useOrganizationStore()
 const isOwner = computed(() => organizationStore.userOrganizations.length > 0)
-
 </script>
 
 <template>
@@ -26,41 +25,48 @@ const isOwner = computed(() => organizationStore.userOrganizations.length > 0)
     <div class="row">
       <div class="col-md-auto me-3">
         <h6 class="mt-3">Siembra</h6>
-        <SowingSessionSelector v-model="filters.sowing"/>
+        <SowingSessionSelector v-model="filters.sowing" />
       </div>
       <div class="col-md-auto me-3">
         <h6 class="mt-3">Familia</h6>
-        <select class="form-select" id="botanicalFamily" aria-label="Botanical family select" v-model="filters.family">
+        <select
+          class="form-select"
+          id="botanicalFamily"
+          aria-label="Botanical family select"
+          v-model="filters.family"
+        >
           <option selected :value="null">No aplicar filtro</option>
           <option v-for="(value, key) in BOTANICAL_FAMILIES" :key="key" :value="key">
-            {{ value.text }} ({{ value.examples.join(", ") }})
+            {{ value.text }} ({{ value.examples.join(', ') }})
           </option>
         </select>
       </div>
       <div class="col-md-auto me-3">
         <h6 class="mt-3">Reproducción</h6>
         <TagCheckButton
-            v-for="tag in TAGS.filter(t => t.group === 'REPRODUCTION')"
-            :key="tag.id"
-            :tag="tag"
-            v-model="filters.tags"/>
-
+          v-for="tag in TAGS.filter((t) => t.group === 'REPRODUCTION')"
+          :key="tag.id"
+          :tag="tag"
+          v-model="filters.tags"
+        />
       </div>
       <div class="col-md-auto me-3">
         <h6 class="mt-3">Polinización</h6>
         <TagCheckButton
-            v-for="tag in TAGS.filter(t => t.group === 'POLLINATION')"
-            :key="tag.id"
-            :tag="tag"
-            v-model="filters.tags"/>
+          v-for="tag in TAGS.filter((t) => t.group === 'POLLINATION')"
+          :key="tag.id"
+          :tag="tag"
+          v-model="filters.tags"
+        />
       </div>
       <div class="col-md-auto me-3">
         <h6 class="mt-3">Otros</h6>
         <TagCheckButton
-            v-for="tag in TAGS.filter(t => t.group === 'OTHER')"
-            :key="tag.id"
-            :tag="tag"
-            v-model="filters.tags"/>
+          v-for="tag in TAGS.filter((t) => t.group === 'OTHER')"
+          :key="tag.id"
+          :tag="tag"
+          v-model="filters.tags"
+        />
       </div>
       <div class="col-md-auto me-3">
         <h6 class="mt-3">Envío</h6>
@@ -73,23 +79,41 @@ const isOwner = computed(() => organizationStore.userOrganizations.length > 0)
       <div class="col-md-auto me-3" v-if="user && isOwner">
         <h6 class="mt-3">Estado</h6>
         <div class="form-check form-check-inline">
-          <input class="form-check-input" type="checkbox" id="filterDraft" role="switch" v-model="filters.draft">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="filterDraft"
+            role="switch"
+            v-model="filters.draft"
+          />
           <label class="form-check-label" for="filterDraft">Borradores</label>
         </div>
       </div>
       <div class="col-md-auto me-3" v-if="user">
         <h6 class="mt-3">Quiero / Tengo</h6>
         <div class="form-check form-check-inline">
-          <input class="form-check-input" type="checkbox" id="filterHave" role="switch" v-model="filters.have">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="filterHave"
+            role="switch"
+            v-model="filters.have"
+          />
           <label class="form-check-label" for="filterHave">Las que tengo</label>
         </div>
         <div class="form-check form-check-inline">
-          <input class="form-check-input" type="checkbox" id="filterWant" role="switch" v-model="filters.want">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="filterWant"
+            role="switch"
+            v-model="filters.want"
+          />
           <label class="form-check-label" for="filterWant">Las que quiero</label>
         </div>
       </div>
     </div>
-    <hr class="my-3"/>
+    <hr class="my-3" />
     <h5>Ordenar por</h5>
     <div class="card-text row">
       <div class="col-md-3">

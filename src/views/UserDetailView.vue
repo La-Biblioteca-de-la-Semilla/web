@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import { computed, type ComputedRef, ref, type Ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
@@ -23,15 +22,15 @@ const { chat } = storeToRefs(chatStore)
 chatStore.fetch()
 
 const user: Ref<User | null> = ref(null)
-usersStore.getUserById(route.params.id as string).then((value) => user.value = value)
+usersStore.getUserById(route.params.id as string).then((value) => (user.value = value))
 
 const have: ComputedRef<Seed[]> = computed(() => {
   if (!user.value) return []
-  const resultIndex = Object.fromEntries(seeds.value.map(item => [item.id, item]))
+  const resultIndex = Object.fromEntries(seeds.value.map((item) => [item.id, item]))
   const haveSet = new Set(currentUser.value?.have)
 
   return user.value.have
-    .map(seedId => resultIndex[seedId])
+    .map((seedId) => resultIndex[seedId])
     .filter(Boolean)
     .sort((a, b) => {
       const inHaveA = haveSet.has(a.id)
@@ -44,11 +43,11 @@ const have: ComputedRef<Seed[]> = computed(() => {
 
 const want: ComputedRef<Seed[]> = computed(() => {
   if (!user.value) return []
-  const resultIndex = Object.fromEntries(seeds.value.map(item => [item.id, item]))
+  const resultIndex = Object.fromEntries(seeds.value.map((item) => [item.id, item]))
   const haveSet = new Set(currentUser.value?.have)
 
   return user.value.want
-    .map(seedId => resultIndex[seedId])
+    .map((seedId) => resultIndex[seedId])
     .filter(Boolean)
     .sort((a, b) => {
       const inHaveA = haveSet.has(a.id)
@@ -66,7 +65,6 @@ const onCreateChat = () => {
   })
   router.push({ name: 'user-chat', params: { id: user.value.id } })
 }
-
 </script>
 
 <template>
@@ -77,7 +75,11 @@ const onCreateChat = () => {
       </div>
       <div class="col-md-9">
         <div class="btn-group float-end">
-          <RouterLink class="btn btn-primary" :to="{name: 'user-chat', params:{id: user.id}}" v-if="chat">
+          <RouterLink
+            class="btn btn-primary"
+            :to="{ name: 'user-chat', params: { id: user.id } }"
+            v-if="chat"
+          >
             <i class="bi bi-chat" /> Abrir chat
           </RouterLink>
           <button class="btn btn-primary" v-else @click="onCreateChat">
@@ -90,37 +92,39 @@ const onCreateChat = () => {
     </div>
     <div class="row mt-5 text-center">
       <div class="col-md-6">
-        <i class="bi bi-arrow-left-square-fill text-primary" /> {{ user.name }} la tiene y tú la quieres
+        <i class="bi bi-arrow-left-square-fill text-primary" /> {{ user.name }} la tiene y tú la
+        quieres
       </div>
       <div class="col-md-6">
-        <i class="bi bi-arrow-right-square-fill text-success" /> Tú la tienes y {{ user.name }} la quiere
+        <i class="bi bi-arrow-right-square-fill text-success" /> Tú la tienes y {{ user.name }} la
+        quiere
       </div>
     </div>
     <div class="row">
       <div class="col-md-6">
         <div class="card">
-          <div class="card-header">
-            Tiene
-          </div>
+          <div class="card-header">Tiene</div>
           <ul class="list-group list-group-flush">
             <li class="list-group-item" v-for="seed in have" :key="seed.id">
               {{ seed.name }}
-              <i v-if="currentUser?.want.includes(seed.id)"
-                 class="bi bi-arrow-left-square-fill text-primary float-end" />
+              <i
+                v-if="currentUser?.want.includes(seed.id)"
+                class="bi bi-arrow-left-square-fill text-primary float-end"
+              />
             </li>
           </ul>
         </div>
       </div>
       <div class="col-md-6 mt-md-0 mt-5">
         <div class="card">
-          <div class="card-header">
-            Quiere
-          </div>
+          <div class="card-header">Quiere</div>
           <ul class="list-group list-group-flush">
             <li class="list-group-item" v-for="seed in want" :key="seed.id">
               {{ seed.name }}
-              <i v-if="currentUser?.have.includes(seed.id)"
-                 class="bi bi-arrow-right-square-fill text-success float-end" />
+              <i
+                v-if="currentUser?.have.includes(seed.id)"
+                class="bi bi-arrow-right-square-fill text-success float-end"
+              />
             </li>
           </ul>
         </div>

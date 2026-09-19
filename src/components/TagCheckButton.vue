@@ -1,6 +1,5 @@
 <script setup lang="ts">
-
-import {type Tag} from "@/model/Tag";
+import { type Tag } from '@/model/Tag'
 
 interface Props {
   tag: Tag
@@ -8,18 +7,21 @@ interface Props {
 
 const props = defineProps<Props>()
 const model = defineModel()
-
 </script>
 
 <template>
   <div class="form-check filter-form-check-inline">
-    <input type="checkbox" class="btn-check" autocomplete="off"
-           :id="'filter-tag-check-button-' + props.tag.id"
-           :value="props.tag.id"
-            v-model="model">
+    <input
+      type="checkbox"
+      class="btn-check"
+      autocomplete="off"
+      :id="'filter-tag-check-button-' + props.tag.id"
+      :value="props.tag.id"
+      v-model="model"
+    />
     <label class="btn btn-sm btn-light" :for="'filter-tag-check-button-' + props.tag.id">
-        <img class="img-fluid" :src="props.tag.image" :alt="props.tag.text"/>
-        {{ props.tag.text }}
+      <img class="img-fluid" :src="props.tag.image" :alt="props.tag.text" />
+      {{ props.tag.text }}
     </label>
   </div>
 </template>

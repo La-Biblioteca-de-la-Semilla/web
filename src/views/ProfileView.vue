@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import { useUsersStore } from '@/stores/users'
 import { storeToRefs } from 'pinia'
 import ImageSelectorModal from '@/components/modals/ImageSelectorModal.vue'
@@ -16,14 +15,16 @@ function onImageChanged(image: string) {
 }
 
 function onSave() {
-  userStore.save().then(() => {
-    toaster.success({ text: 'Tu perfil se ha actualizado correctamente' })
-  }).catch((reason) => {
-    console.log(reason)
-    toaster.error({ text: 'Ha ocurrido un error al guardar tu perfil' })
-  })
+  userStore
+    .save()
+    .then(() => {
+      toaster.success({ text: 'Tu perfil se ha actualizado correctamente' })
+    })
+    .catch((reason) => {
+      console.log(reason)
+      toaster.error({ text: 'Ha ocurrido un error al guardar tu perfil' })
+    })
 }
-
 </script>
 
 <template>
@@ -38,12 +39,17 @@ function onSave() {
       <div class="col-auto">
         <b>Actualiza tu foto de perfil</b>
         <br />
-        <button class="btn btn-light my-1"
-                data-bs-toggle="modal"
-                data-bs-target="#profileImageSelectorModal">Cambiar imagen
+        <button
+          class="btn btn-light my-1"
+          data-bs-toggle="modal"
+          data-bs-target="#profileImageSelectorModal"
+        >
+          Cambiar imagen
         </button>
         <br />
-        <small class="text-muted">Lo ideal es una foto cuadrada, aunque podrás recortarla durante el proceso.</small>
+        <small class="text-muted"
+          >Lo ideal es una foto cuadrada, aunque podrás recortarla durante el proceso.</small
+        >
       </div>
     </div>
 
@@ -52,7 +58,12 @@ function onSave() {
       <div class="col">
         <div class="mb-3">
           <label for="displayNameInput" class="form-label">Nombre público</label>
-          <input class="form-control" id="displayNameInput" placeholder="Nombre público" v-model="user.name">
+          <input
+            class="form-control"
+            id="displayNameInput"
+            placeholder="Nombre público"
+            v-model="user.name"
+          />
         </div>
       </div>
     </div>

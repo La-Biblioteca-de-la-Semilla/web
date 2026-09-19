@@ -14,19 +14,26 @@ function onReport() {
 function onImageClicked() {
   emit('image-clicked', props.image.id)
 }
-
 </script>
 
 <template>
   <div class="position-relative">
-    <img :src="props.image.src" class="img-fluid seed-img" alt="" @click="onImageClicked">
+    <img :src="props.image.src" class="img-fluid seed-img" alt="" @click="onImageClicked" />
     <div class="dropdown overlay-dropdown">
-      <button class="btn btn-sm btn-outline-light" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <button
+        class="btn btn-sm btn-outline-light"
+        type="button"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+      >
         <i class="bi bi-three-dots-vertical" />
       </button>
       <ul class="dropdown-menu">
         <li>
-          <RouterLink :to="{ name: 'seed-detail', params: { id: props.image.seedId } }" class="dropdown-item">
+          <RouterLink
+            :to="{ name: 'seed-detail', params: { id: props.image.seedId } }"
+            class="dropdown-item"
+          >
             Ver semilla
           </RouterLink>
         </li>
@@ -38,7 +45,9 @@ function onImageClicked() {
         </li>
       </ul>
     </div>
-    <small class="badge text-bg-light overlay-text">por <i>{{ props.image.createdBy }}</i></small>
+    <small class="badge text-bg-light overlay-text"
+      >por <i>{{ props.image.createdBy }}</i></small
+    >
   </div>
 </template>
 
@@ -65,5 +74,4 @@ function onImageClicked() {
 .overlay-dropdown button {
   border: 0;
 }
-
 </style>

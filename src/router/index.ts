@@ -3,7 +3,6 @@ import HomeView from '../views/HomeView.vue'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { useOrganizationStore } from '@/stores/organization'
 
-
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -163,7 +162,6 @@ router.beforeEach(async (to, from, next) => {
 
 router.beforeEach(async (to, from, next) => {
   if (to.matched.some((record) => record.meta.requiresOrg)) {
-
     const organizationStore = useOrganizationStore()
     if (organizationStore.organizations[0]) {
       next()
@@ -175,6 +173,5 @@ router.beforeEach(async (to, from, next) => {
     next()
   }
 })
-
 
 export default router

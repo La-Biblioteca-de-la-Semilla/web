@@ -1,4 +1,4 @@
 export type CreateImageDto = {
-  src: string,
+  src: string
   seedId: string
 }

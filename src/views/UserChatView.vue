@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
@@ -16,7 +15,6 @@ const { chat } = storeToRefs(chatsStore)
 
 const participant = ref<User | null>(null)
 const text = ref<string>('')
-
 
 async function onSend() {
   if (chat.value && text.value.length > 0) {
@@ -35,9 +33,7 @@ onMounted(async () => {
   await chatsStore.fetch()
   await chatsStore.loadMessagesByParticipant(route.params.id as string)
   participant.value = await usersStore.getUserById(route.params.id as string)
-
 })
-
 </script>
 
 <template>
@@ -47,11 +43,14 @@ onMounted(async () => {
         <img v-bind:src="participant.image" class="img-fluid" alt="..." style="height: 48px" />
       </div>
       <div class="col text-truncate ps-0">
-        <p class="fs-4 text-truncate m-0">{{ participant.name }} </p>
+        <p class="fs-4 text-truncate m-0">{{ participant.name }}</p>
       </div>
       <div class="col-auto">
         <div class="btn-group">
-          <RouterLink class="btn btn-outline-secondary" :to="{name: 'user-detail', params:{id: participant.id}}">
+          <RouterLink
+            class="btn btn-outline-secondary"
+            :to="{ name: 'user-detail', params: { id: participant.id } }"
+          >
             <i class="bi bi-person" /> Ver perfil
           </RouterLink>
         </div>
@@ -60,22 +59,21 @@ onMounted(async () => {
     <div id="chat-content" class="overflow-y-auto card pb-3" v-if="chat">
       <div class="row pt-4 m-0" v-for="m in chat.messages" :key="m.id">
         <div class="col">
-          <div class="card"
-               :class="{
-                   'float-start text-bg-light me-5 text-start': m.from !== user?.id,
-                   'float-end text-bg-primary ms-5 text-end': m.from === user?.id,
-                 }">
+          <div
+            class="card"
+            :class="{
+              'float-start text-bg-light me-5 text-start': m.from !== user?.id,
+              'float-end text-bg-primary ms-5 text-end': m.from === user?.id
+            }"
+          >
             <div class="card-body py-0 pt-2">
               <p class="card-text m-0">{{ m.text }}</p>
-              <i v-if="m.sentAt === new Date()"
-                 class="float-end"
-                 style="font-size: 0.7rem">
+              <i v-if="m.sentAt === new Date()" class="float-end" style="font-size: 0.7rem">
                 {{ m.sentAt.toLocaleTimeString().substring(0, 5) }}
               </i>
-              <i v-else
-                 class="float-end"
-                 style="font-size: 0.6rem">
-                {{ m.sentAt.toLocaleDateString() }} {{ m.sentAt.toLocaleTimeString().substring(0, 5) }}
+              <i v-else class="float-end" style="font-size: 0.6rem">
+                {{ m.sentAt.toLocaleDateString() }}
+                {{ m.sentAt.toLocaleTimeString().substring(0, 5) }}
               </i>
             </div>
           </div>
@@ -93,11 +91,15 @@ onMounted(async () => {
     <div class="row">
       <div class="col">
         <div class="input-group mb-3">
-          <input type="text" class="form-control" placeholder="Escribe tu mensaje..."
-                 aria-label="Escribe tu mensaje"
-                 aria-describedby="send-message"
-                 v-model="text"
-                 @keydown.prevent.enter="onSend">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Escribe tu mensaje..."
+            aria-label="Escribe tu mensaje"
+            aria-describedby="send-message"
+            v-model="text"
+            @keydown.prevent.enter="onSend"
+          />
           <button class="btn btn-outline-primary" type="button" id="send-message" @click="onSend">
             <i class="bi bi-send" /> Enviar
           </button>

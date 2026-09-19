@@ -4,7 +4,6 @@ import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/
 import { auth } from '@/firebase/firebase'
 import { userService } from '@/services/userService'
 
-
 export const useUsersStore = defineStore('users', {
   state: () => ({
     user: null as User | null,
@@ -85,7 +84,7 @@ export const useUsersStore = defineStore('users', {
           }
         } else {
           if (this.user.have.length > 0) {
-            this.user.have = this.user.have.filter(id => id !== seedId)
+            this.user.have = this.user.have.filter((id) => id !== seedId)
           }
         }
         await this.save()
@@ -101,7 +100,7 @@ export const useUsersStore = defineStore('users', {
           }
         } else {
           if (this.user.want.length > 0) {
-            this.user.want = this.user.want.filter(id => id !== seedId)
+            this.user.want = this.user.want.filter((id) => id !== seedId)
           }
         }
         await this.save()

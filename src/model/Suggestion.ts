@@ -14,7 +14,7 @@ export type Suggestion = {
   sow: number[] | null
   sentOn: string | null
   tags: string[] | null
-  family: BotanicalFamily | null,
+  family: BotanicalFamily | null
   sfgOriginal: SquareFootType | null
   sfgMultisow: SquareFootType | null
   sfgClump: SquareFootType | null

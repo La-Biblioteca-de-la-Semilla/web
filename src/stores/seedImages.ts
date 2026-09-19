@@ -4,8 +4,8 @@ import type { CreateImageDto } from '@/dtos/seedImages/CreateImageDto'
 import { imageService } from '@/services/imageService'
 
 export type Pagination = {
-  total: number,
-  page: number,
+  total: number
+  page: number
   limit: number
 }
 
@@ -40,7 +40,6 @@ export const useSeedImagesStore = defineStore('seedImages', {
 
         this.images.push(createdImage)
         this.seedImages.push(createdImage)
-
       } catch (reason) {
         return await Promise.reject(reason)
       }
@@ -51,7 +50,6 @@ export const useSeedImagesStore = defineStore('seedImages', {
         const result = await imageService.listImages({ seedId: seedId })
         this.seedImages = result.images
         this.seedImagesPagination = result.pagination
-
       } catch (reason) {
         return await Promise.reject(reason)
       }

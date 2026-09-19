@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import { useRoute, useRouter } from 'vue-router'
 import { useSeedStore } from '@/stores/seed'
 import { BOTANICAL_FAMILIES, type Seed, SQUARE_FOOT_IMAGE } from '@/model/Seed'
@@ -37,16 +36,18 @@ function onPrint() {
 }
 
 const seed = computed(() => seeds.value.find((s: Seed) => s.id === route.params.id) || null)
-const organization = computed(() => organizations.value.find((o: Organization) => o.id === seed.value?.owner) || null)
+const organization = computed(
+  () => organizations.value.find((o: Organization) => o.id === seed.value?.owner) || null
+)
 const haveState = computed({
-  get: () => user.value && seed.value ? user.value.have.includes(seed.value.id) : false,
+  get: () => (user.value && seed.value ? user.value.have.includes(seed.value.id) : false),
   set: (value) => {
     if (seed.value) userStore.updateHave(seed.value.id, value)
   }
 })
 
 let wantState = computed({
-  get: () => user.value && seed.value ? user.value.want.includes(seed.value.id) : false,
+  get: () => (user.value && seed.value ? user.value.want.includes(seed.value.id) : false),
   set: (value) => {
     if (seed.value) userStore.updateWant(seed.value.id, value)
   }
@@ -83,15 +84,14 @@ async function onPublish() {
     }
   }
 }
-
 </script>
 
 <template>
   <div class="container" v-if="seed">
-    <nav class="mb-2 pt-md-5 pt-3" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+    <nav class="mb-2 pt-md-5 pt-3" style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
       <ol class="breadcrumb">
         <li class="breadcrumb-item">
-          <RouterLink :to="{name: 'home'}">Inicio</RouterLink>
+          <RouterLink :to="{ name: 'home' }">Inicio</RouterLink>
         </li>
         <li class="breadcrumb-item active" aria-current="page">{{ seed.name }}</li>
       </ol>
@@ -100,7 +100,11 @@ async function onPublish() {
       <div class="row g-0">
         <div class="col-md-4 position-relative">
           <img v-bind:src="seed.image" class="img-fluid seed-img pe-3" alt="..." />
-          <span v-if="seed.status === 'draft'" class="badge text-bg-warning position-absolute top-0 start-0 mt-2 fs-4 rounded-start-0">Borrador</span>
+          <span
+            v-if="seed.status === 'draft'"
+            class="badge text-bg-warning position-absolute top-0 start-0 mt-2 fs-4 rounded-start-0"
+            >Borrador</span
+          >
         </div>
         <div class="col-md-8 mt-4 mt-md-0">
           <div class="btn-group float-end">
@@ -110,16 +114,21 @@ async function onPublish() {
             <button class="btn btn-sm btn-light" @click.prevent="onShare">
               <i class="bi-share" /> Compartir
             </button>
-            <button v-if="user" type="button" class="btn btn-sm btn-light dropdown-toggle dropdown-toggle-split"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false">
+            <button
+              v-if="user"
+              type="button"
+              class="btn btn-sm btn-light dropdown-toggle dropdown-toggle-split"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
               <span class="visually-hidden">Acciones</span>
             </button>
             <ul class="dropdown-menu" v-if="user && organization?.owner === user.id">
               <li>
                 <RouterLink
-                  :to="{name: 'seed-edit', params:{id: seed.id}}"
-                  class="dropdown-item">
+                  :to="{ name: 'seed-edit', params: { id: seed.id } }"
+                  class="dropdown-item"
+                >
                   <i class="bi-pencil" /> Editar
                 </RouterLink>
               </li>
@@ -131,8 +140,9 @@ async function onPublish() {
             </ul>
             <ul class="dropdown-menu" v-else-if="user">
               <RouterLink
-                :to="{name: 'seed-suggestion', params:{id: seed.id}}"
-                class="dropdown-item">
+                :to="{ name: 'seed-suggestion', params: { id: seed.id } }"
+                class="dropdown-item"
+              >
                 <i class="bi bi-bandaid" /> Sugerir un cambio
               </RouterLink>
             </ul>
@@ -141,9 +151,19 @@ async function onPublish() {
           <h1 class="mb-0">{{ seed.name }}</h1>
           <h2 class="mb-2 text-muted">{{ seed.species }}</h2>
           <p class="mb-3" v-if="organization">
-            <a class="btn btn-sm btn-light" v-if="seed.owner" :href="organization.url" target="_blank">
-              <img :src="organization.image" width="20" height="20" class="rounded-circle"
-                   :alt="organization.name + ' logo'">
+            <a
+              class="btn btn-sm btn-light"
+              v-if="seed.owner"
+              :href="organization.url"
+              target="_blank"
+            >
+              <img
+                :src="organization.image"
+                width="20"
+                height="20"
+                class="rounded-circle"
+                :alt="organization.name + ' logo'"
+              />
               {{ organization.name }}
             </a>
             <small class="text-muted ms-3 float-end"> {{ seed.sentOn }}</small>
@@ -153,23 +173,27 @@ async function onPublish() {
               <img class="img-fluid" :src="logo" alt="" style="max-height: 25px; padding: 3px" />
               {{ BOTANICAL_FAMILIES[seed.family].text }}
             </span>
-            <TagBadge
-              v-for="(tag, i) in toTags(seed.tags)"
-              :key="i"
-              :tag="tag"
-            />
+            <TagBadge v-for="(tag, i) in toTags(seed.tags)" :key="i" :tag="tag" />
           </p>
           <SowingSessionInfo :sow="seed.sow"></SowingSessionInfo>
 
           <div class="text-muted" v-if="user">
             <div class="form-check form-check-inline">
-              <input class="form-check-input" type="checkbox" :id="'haveCheckbox-' + seed.id"
-                     v-model="haveState">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                :id="'haveCheckbox-' + seed.id"
+                v-model="haveState"
+              />
               <label class="form-check-label" :for="'haveCheckbox-' + seed.id">La tengo</label>
             </div>
             <div class="form-check form-check-inline">
-              <input class="form-check-input" type="checkbox" :id="'wantCheckbox-' + seed.id"
-                     v-model="wantState">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                :id="'wantCheckbox-' + seed.id"
+                v-model="wantState"
+              />
               <label class="form-check-label" :for="'wantCheckbox-' + seed.id">La quiero</label>
             </div>
           </div>
@@ -196,35 +220,45 @@ async function onPublish() {
 
             <table class="table table-borderless w-auto">
               <thead class="text-center">
-              <tr>
-                <th scope="col" v-if="seed.sfgOriginal">Original</th>
-                <th scope="col" v-if="seed.sfgMultisow">Multisow</th>
-                <th scope="col" v-if="seed.sfgClump">Macizo</th>
-              </tr>
+                <tr>
+                  <th scope="col" v-if="seed.sfgOriginal">Original</th>
+                  <th scope="col" v-if="seed.sfgMultisow">Multisow</th>
+                  <th scope="col" v-if="seed.sfgClump">Macizo</th>
+                </tr>
               </thead>
               <tbody>
-              <tr>
-                <td v-if="seed.sfgOriginal">
-                  <img class="img-fluid img-thumbnail rounded" :src="SQUARE_FOOT_IMAGE[seed.sfgOriginal]" />
-                </td>
-                <td v-if="seed.sfgMultisow">
-                  <img class="img-fluid img-thumbnail rounded" :src="SQUARE_FOOT_IMAGE[seed.sfgMultisow]" />
-                </td>
-                <td v-if="seed.sfgClump">
-                  <img class="img-fluid img-thumbnail rounded" :src="SQUARE_FOOT_IMAGE[seed.sfgClump]" />
-                </td>
-              </tr>
+                <tr>
+                  <td v-if="seed.sfgOriginal">
+                    <img
+                      class="img-fluid img-thumbnail rounded"
+                      :src="SQUARE_FOOT_IMAGE[seed.sfgOriginal]"
+                    />
+                  </td>
+                  <td v-if="seed.sfgMultisow">
+                    <img
+                      class="img-fluid img-thumbnail rounded"
+                      :src="SQUARE_FOOT_IMAGE[seed.sfgMultisow]"
+                    />
+                  </td>
+                  <td v-if="seed.sfgClump">
+                    <img
+                      class="img-fluid img-thumbnail rounded"
+                      :src="SQUARE_FOOT_IMAGE[seed.sfgClump]"
+                    />
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
           <div v-if="seed.germinationMin !== null || seed.germinationMax !== null">
             <h4>Germinación</h4>
-            <p>Temperatura óptima:
-              <a v-if="seed.germinationMin !== null"><i class="bi bi-thermometer" />
-                Mínimo: {{ seed.germinationMin }}
+            <p>
+              Temperatura óptima:
+              <a v-if="seed.germinationMin !== null"
+                ><i class="bi bi-thermometer" /> Mínimo: {{ seed.germinationMin }}
               </a>
-              <a v-if="seed.germinationMax !== null"><i class="bi bi-thermometer-high" />
-                Máximo: {{ seed.germinationMax }}
+              <a v-if="seed.germinationMax !== null"
+                ><i class="bi bi-thermometer-high" /> Máximo: {{ seed.germinationMax }}
               </a>
             </p>
           </div>
@@ -237,11 +271,9 @@ async function onPublish() {
 
     <ImageSelectorModal id="seedDetailImageSelectorModal" @finished="onImageAdded" />
   </div>
-
 </template>
 
 <style scoped>
-
 .seed-img {
   width: 100%;
   object-fit: cover;
@@ -254,5 +286,4 @@ async function onPublish() {
     object-fit: cover;
   }
 }
-
 </style>

@@ -5,7 +5,6 @@ import { useUsersStore } from '@/stores/users'
 import type { UpdateSeedDto } from '@/dtos/seeds/UpdateSeedDto'
 import { seedService } from '@/services/seedService'
 
-
 export const useSeedStore = defineStore('seed', {
   state: () => ({
     seeds: [] as Seed[],
@@ -41,31 +40,37 @@ export const useSeedStore = defineStore('seed', {
           if (draft && seed.status !== 'draft') return false
 
           // Search bar filter
-          if (searchBar && !(
-            seed.name.toUpperCase().includes(searchUpper) ||
-            seed.species.toUpperCase().includes(searchUpper)
-          )) return false
+          if (
+            searchBar &&
+            !(
+              seed.name.toUpperCase().includes(searchUpper) ||
+              seed.species.toUpperCase().includes(searchUpper)
+            )
+          )
+            return false
 
           // Tags filter
-          if (tags.length > 0 && !tags.every(tag => seed.tags.includes(tag))) return false
+          if (tags.length > 0 && !tags.every((tag) => seed.tags.includes(tag))) return false
 
           // SentOn filter
-          if (sentOn.length > 0 && !(
-            (sentOn === 'N/A' && seed.sentOn === '') ||
-            seed.sentOn === sentOn
-          )) return false
+          if (
+            sentOn.length > 0 &&
+            !((sentOn === 'N/A' && seed.sentOn === '') || seed.sentOn === sentOn)
+          )
+            return false
 
           if (family && seed.family !== family) return false
 
           // User preferences filter
-          if (user && (have || want) && !(
-            (have && user.have.includes(seed.id)) ||
-            (want && user.want.includes(seed.id))
-          )) return false
+          if (
+            user &&
+            (have || want) &&
+            !((have && user.have.includes(seed.id)) || (want && user.want.includes(seed.id)))
+          )
+            return false
 
           // Sowing filter
-          return !(sowing.length > 0 && !sowing.some(value => seed.sow.includes(value)))
-
+          return !(sowing.length > 0 && !sowing.some((value) => seed.sow.includes(value)))
         })
         .sort((a, b) => {
           if (!sortKey) return 0
@@ -78,10 +83,12 @@ export const useSeedStore = defineStore('seed', {
       return (name: string) => state.seeds.find((seed) => seed.name === name)
     },
     getSentOnValues: (state) => {
-      return state.seeds.reduce((acc, value) => {
-        if (value.sentOn !== '' && !acc.includes(value.sentOn)) acc.push(value.sentOn)
-        return acc
-      }, [] as String[]).sort()
+      return state.seeds
+        .reduce((acc, value) => {
+          if (value.sentOn !== '' && !acc.includes(value.sentOn)) acc.push(value.sentOn)
+          return acc
+        }, [] as String[])
+        .sort()
     }
   },
   actions: {
@@ -91,20 +98,23 @@ export const useSeedStore = defineStore('seed', {
         this.isLoading = true
         const seedsData = await seedService.getSeeds()
 
-        this.seeds = seedsData.map((data: Seed) => ({
-          ...data,
-          owner: data.owner,
-          description: data.description ?? '',
-          sow: data.sow ?? [],
-          sentOn: data.sentOn ?? '',
-          tags: [...(data.tags ?? [])].sort(),
-          family: data.family ?? null,
-          sfgOriginal: data.sfgOriginal ?? null,
-          sfgMultisow: data.sfgMultisow ?? null,
-          sfgClump: data.sfgClump ?? null,
-          germinationMin: data.germinationMin ?? null,
-          status: data.status ?? 'published'
-        }) as Seed)
+        this.seeds = seedsData.map(
+          (data: Seed) =>
+            ({
+              ...data,
+              owner: data.owner,
+              description: data.description ?? '',
+              sow: data.sow ?? [],
+              sentOn: data.sentOn ?? '',
+              tags: [...(data.tags ?? [])].sort(),
+              family: data.family ?? null,
+              sfgOriginal: data.sfgOriginal ?? null,
+              sfgMultisow: data.sfgMultisow ?? null,
+              sfgClump: data.sfgClump ?? null,
+              germinationMin: data.germinationMin ?? null,
+              status: data.status ?? 'published'
+            }) as Seed
+        )
       } catch (error) {
         console.error('Error fetching seeds:', error)
       } finally {
@@ -158,19 +168,18 @@ export const useSeedStore = defineStore('seed', {
 
         await seedService.updateSeed(seed.id, updateSeedDto)
 
-        const seedIndex = this.seeds.findIndex(s => s.id === seed.id)
+        const seedIndex = this.seeds.findIndex((s) => s.id === seed.id)
         this.seeds[seedIndex] = seed
 
         return seed
       } catch (error) {
         return await Promise.reject(error)
       }
-
     },
     async delete(id: string) {
       try {
         await seedService.deleteSeed(id)
-        const removeIndex = this.seeds.findIndex(seed => seed.id === id)
+        const removeIndex = this.seeds.findIndex((seed) => seed.id === id)
         if (removeIndex >= 0) {
           this.seeds.splice(removeIndex, 1)
         }
@@ -181,23 +190,26 @@ export const useSeedStore = defineStore('seed', {
     async fetchDraft() {
       try {
         const draftData = await seedService.getDraftSeeds()
-        const mapped = draftData.map((data: Seed) => ({
-          ...data,
-          owner: data.owner,
-          description: data.description ?? '',
-          sow: data.sow ?? [],
-          sentOn: data.sentOn ?? '',
-          tags: [...(data.tags ?? [])].sort(),
-          family: data.family ?? null,
-          sfgOriginal: data.sfgOriginal ?? null,
-          sfgMultisow: data.sfgMultisow ?? null,
-          sfgClump: data.sfgClump ?? null,
-          germinationMin: data.germinationMin ?? null,
-          status: data.status ?? 'draft'
-        }) as Seed)
+        const mapped = draftData.map(
+          (data: Seed) =>
+            ({
+              ...data,
+              owner: data.owner,
+              description: data.description ?? '',
+              sow: data.sow ?? [],
+              sentOn: data.sentOn ?? '',
+              tags: [...(data.tags ?? [])].sort(),
+              family: data.family ?? null,
+              sfgOriginal: data.sfgOriginal ?? null,
+              sfgMultisow: data.sfgMultisow ?? null,
+              sfgClump: data.sfgClump ?? null,
+              germinationMin: data.germinationMin ?? null,
+              status: data.status ?? 'draft'
+            }) as Seed
+        )
         // Añadir solo las que no estén ya en la lista
         for (const seed of mapped) {
-          if (!this.seeds.find(s => s.id === seed.id)) {
+          if (!this.seeds.find((s) => s.id === seed.id)) {
             this.seeds.push(seed)
           }
         }
@@ -208,7 +220,7 @@ export const useSeedStore = defineStore('seed', {
     async publish(id: string) {
       try {
         await seedService.publishSeed(id)
-        const seed = this.seeds.find(s => s.id === id)
+        const seed = this.seeds.find((s) => s.id === id)
         if (seed) seed.status = 'published'
       } catch (error) {
         return Promise.reject(error)
