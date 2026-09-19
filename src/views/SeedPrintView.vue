@@ -241,16 +241,20 @@ onMounted(async () => {
 
 <style scoped>
 @font-face {
-  font-family: glassAntiqua;
-  src: url('@/assets/fonts/GlassAntiqua-Regular.ttf');
+  font-family: unigeo;
+  src: url('@/assets/fonts/Unigeo64-Regular-trial.ttf');
+  font-weight: normal;
 }
 @font-face {
-  font-family: josefinSlab;
-  src: url('@/assets/fonts/JosefinSlab-VariableFont_wght.ttf');
+  font-family: unigeo;
+  src: url('@/assets/fonts/Unigeo64-Bold-trial.ttf');
+  font-weight: bold;
 }
 @font-face {
-  font-family: roboto;
-  src: url('@/assets/fonts/Roboto-Light.ttf');
+  font-family: unigeo;
+  src: url('@/assets/fonts/Unigeo64-Italic-trial.ttf');
+  font-weight: normal;
+  font-style: italic;
 }
 
 * {
@@ -327,7 +331,7 @@ onMounted(async () => {
 }
 
 .seed-title {
-  font-family: josefinSlab, serif;
+  font-family: unigeo, sans-serif;
   font-size: 52px;
   font-weight: 700;
   text-transform: uppercase;
@@ -346,7 +350,7 @@ onMounted(async () => {
 }
 
 .seed-species {
-  font-family: josefinSlab, serif;
+  font-family: unigeo, sans-serif;
   font-size: 28px;
   font-weight: normal;
   font-style: italic;
@@ -384,7 +388,7 @@ onMounted(async () => {
 }
 
 .section-title {
-  font-family: glassAntiqua, serif;
+  font-family: unigeo, sans-serif;
   font-size: 24px;
   font-weight: normal;
   color: #2c2523;
@@ -395,7 +399,7 @@ onMounted(async () => {
 
 /* Description */
 .description-text {
-  font-family: josefinSlab, serif;
+  font-family: unigeo, sans-serif;
   font-size: 25px;
   line-height: 25px;
   text-align: justify;
@@ -495,14 +499,14 @@ onMounted(async () => {
 }
 
 .tag-title {
-  font-family: roboto, sans-serif;
+  font-family: unigeo, sans-serif;
   font-size: 13px;
   font-weight: 600;
   color: #2b2b2b;
 }
 
 .tag-desc {
-  font-family: roboto, sans-serif;
+  font-family: unigeo, sans-serif;
   font-size: 12px;
   color: #555;
   line-height: 1.2;
@@ -525,7 +529,7 @@ onMounted(async () => {
 }
 
 .sfg-type-title {
-  font-family: roboto, sans-serif;
+  font-family: unigeo, sans-serif;
   font-size: 12px;
   font-weight: 600;
   color: #4a4a4a;
@@ -548,7 +552,7 @@ onMounted(async () => {
   bottom: 25px;
   left: 75px;
   width: 750px;
-  font-family: roboto, sans-serif;
+  font-family: unigeo, sans-serif;
   font-size: 13.5px;
   text-align: justify;
   color: rgba(0, 0, 0, 0.75);
@@ -559,7 +563,7 @@ onMounted(async () => {
 .no-seed {
   text-align: center;
   padding: 60px;
-  font-family: roboto, sans-serif;
+  font-family: unigeo, sans-serif;
 }
 
 @media print {
